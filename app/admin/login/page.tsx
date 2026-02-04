@@ -181,7 +181,7 @@ export default function LoginPage() {
             <p className="text-gray-500 text-xs">
               Don&apos;t have an account?{" "}
               <span className="text-lime-400 font-medium cursor-pointer">
-                Contact Administrator
+                School Administrator
               </span>
             </p>
           </div>
