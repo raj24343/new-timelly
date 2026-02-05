@@ -2,6 +2,7 @@
 
 import { Bell, Search, Settings } from "lucide-react";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import SectionHeader from "./SectionHeader";
 import SearchInput from "./SearchInput";
@@ -14,6 +15,7 @@ interface AppHeaderProps {
 }
 
 export default function AppHeader({ title }: AppHeaderProps) {
+  const router = useRouter();
   const [showProfile, setShowProfile] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
   const [showSearch, setShowSearch] = useState(false);
@@ -60,8 +62,10 @@ export default function AppHeader({ title }: AppHeaderProps) {
 
             {/* SETTINGS */}
             <button
+              type="button"
               className="p-2 rounded-lg hover:bg-white/10"
-              onClick={() => alert("Navigate to settings")}
+              onClick={() => router.push("/settings")}
+              title="Settings"
             >
               <Settings className="text-white" />
             </button>
@@ -86,7 +90,13 @@ export default function AppHeader({ title }: AppHeaderProps) {
       )}
 
       {showProfile && (
-        <ProfileModal onClose={() => setShowProfile(false)} />
+        <ProfileModal
+          onClose={() => setShowProfile(false)}
+          onOpenSettings={() => {
+            setShowProfile(false);
+            router.push("/settings");
+          }}
+        />
       )}
 
       {/* MOBILE SEARCH PLACEHOLDER */}

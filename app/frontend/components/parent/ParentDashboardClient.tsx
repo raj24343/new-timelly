@@ -24,6 +24,7 @@ export default function ParentDashboardClient() {
     <RequiredRoles allowedRoles={["STUDENT"]}>
       <AppLayout
         title={title}
+        activeTab={tab}
         menuItems={PARENT_MENU_ITEMS}
         profile={{ name: "Parent", subtitle: "Student Parent" }}
       >

@@ -1,5 +1,6 @@
 "use client";
 
+import { Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import AppLayout from "../../AppLayout";
 import { SCHOOLADMIN_MENU_ITEMS, SCHOOLADMIN_TAB_TITLES } from "../../constants/sidebar";
@@ -11,7 +12,7 @@ import SchoolAdminDashboard from "../../components/schooladmin/Dashboard";
 import SchoolTeacherLeavesTab from "../../components/schooladmin/TeacherLeaves";
 import SchoolCercularsTab from "../../components/schooladmin/circulars";
 
-export default function SchoolAdmin() {
+function SchoolAdminContent() {
   const tab = useSearchParams().get("tab") ?? "dashboard";
   const title = SCHOOLADMIN_TAB_TITLES[tab] ?? tab.toUpperCase();
   const renderComponent = () => {
@@ -54,14 +55,22 @@ export default function SchoolAdmin() {
   }
 
   return (
-  <RequiredRoles allowedRoles={['SCHOOLADMIN']}> 
-    <AppLayout
-      activeTab={tab}
-      title={title}
-      menuItems={SCHOOLADMIN_MENU_ITEMS}
-      profile={{ name: "School Admin" }}
-      children={renderComponent()}
-    />
-  </RequiredRoles>
+    <RequiredRoles allowedRoles={["SCHOOLADMIN"]}>
+      <AppLayout
+        activeTab={tab}
+        title={title}
+        menuItems={SCHOOLADMIN_MENU_ITEMS}
+        profile={{ name: "School Admin" }}
+        children={renderComponent()}
+      />
+    </RequiredRoles>
+  );
+}
+
+export default function SchoolAdmin() {
+  return (
+    <Suspense fallback={<div className="flex min-h-[40vh] items-center justify-center text-white/70">Loading...</div>}>
+      <SchoolAdminContent />
+    </Suspense>
   );
 }

@@ -149,41 +149,24 @@ export default function AddSchool() {
     setLoading(true);
 
     try {
-      const userRes = await fetch("/api/admin/signup", {
+      const res = await fetch("/api/superadmin/schools/create", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          name: form.schoolName,
+          schoolName: form.schoolName,
           email: form.email,
           password: form.password,
-          role: "SCHOOLADMIN",
+          address: [form.addressLine, form.area, form.city, form.district, form.state].filter(Boolean).join(", ") || form.schoolName,
+          location: form.area || form.city || "",
+          phone: form.phone || undefined,
         }),
       });
 
-      const userData = await userRes.json();
-      if (!userRes.ok) {
-        setError(userData.message || "Failed to create school admin");
+      const data = await res.json();
+      if (!res.ok) {
+        setError(data.message || "Failed to create school");
         return;
       }
-
-      const schoolAdminId = userData.user.id;
-
-      const schoolRes = await fetch("/api/school/create", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          name: form.schoolName,
-          address: form.addressLine,
-          location: form.area,
-        }),
-      });
-
-      const schoolData = await schoolRes.json();
-      if (!schoolRes.ok) {
-        setError(schoolData.message || "Failed to create school");
-        return;
-      }
-
       setShowSuccess(true);
     } catch (err) {
       setError("Something went wrong");

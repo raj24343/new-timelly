@@ -3,7 +3,7 @@ import SettingsForm from "@/components/settings/SettingsForm";
 
 export default function SettingsPage() {
   return (
-    <RequireRole allowedRoles={["SCHOOLADMIN", "TEACHER", "STUDENT"]}>
+    <RequireRole allowedRoles={["SUPERADMIN", "SCHOOLADMIN", "TEACHER", "STUDENT"]}>
       <SettingsForm />
     </RequireRole>
   );

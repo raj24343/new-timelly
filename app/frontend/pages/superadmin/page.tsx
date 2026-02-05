@@ -1,5 +1,6 @@
 "use client";
 
+import { Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import AppLayout from "../../AppLayout";
 import { SUPERADMIN_SIDEBAR_ITEMS } from "../../constants/sidebar";
@@ -16,33 +17,42 @@ const SUPERADMIN_TAB_TITLES: Record<string, string> = {
   transactions: "Transactions",
 };
 
-export default function SuperAdminDashboard() {
+function SuperAdminContent() {
   const tab = useSearchParams().get("tab") ?? "dashboard";
   const title = SUPERADMIN_TAB_TITLES[tab] ?? tab.toUpperCase();
   const renderComponent = () => {
-  switch (tab) {  
-    case "dashboard":
-      return <Dashboard/>;
-    case "addschool":
-      return <AddSchool/>;
-    case "schools":
-      return <Schools/>;
-    case "transactions":
-      return <Transactions/>;
-    default:
-      return <div>Not found</div>;
-  }}
+    switch (tab) {
+      case "dashboard":
+        return <Dashboard />;
+      case "addschool":
+        return <AddSchool />;
+      case "schools":
+        return <Schools />;
+      case "transactions":
+        return <Transactions />;
+      default:
+        return <div>Not found</div>;
+    }
+  };
 
   return (
-  <RequiredRoles allowedRoles={['SUPERADMIN']}> 
-    <AppLayout
-      title={title}
-      activeTab={tab}
-      menuItems={SUPERADMIN_SIDEBAR_ITEMS}
-      profile={{ name: "Super Admin" }}
-      children={renderComponent()}
-    />
-  </RequiredRoles> 
+    <RequiredRoles allowedRoles={["SUPERADMIN"]}>
+      <AppLayout
+        title={title}
+        activeTab={tab}
+        menuItems={SUPERADMIN_SIDEBAR_ITEMS}
+        profile={{ name: "Super Admin" }}
+        children={renderComponent()}
+      />
+    </RequiredRoles>
+  );
+}
+
+export default function SuperAdminDashboard() {
+  return (
+    <Suspense fallback={<div className="flex min-h-[40vh] items-center justify-center text-white/70">Loading...</div>}>
+      <SuperAdminContent />
+    </Suspense>
   );
 }
 

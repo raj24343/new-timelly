@@ -19,6 +19,7 @@ declare module "next-auth" {
       mobile?: string | null;
       studentId?: string | null;
       allowedFeatures?: string[];
+      schoolIsActive?: boolean; // when false, school is paused (all tabs blocked)
     } & DefaultSession["user"];
   }
 }
@@ -31,5 +32,6 @@ declare module "next-auth/jwt" {
     mobile?: string | null;
     studentId?: string | null;
     allowedFeatures?: string[];
+    schoolIsActive?: boolean;
   }
 }

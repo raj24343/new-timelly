@@ -26,7 +26,7 @@ export default function AppSidebar({ menuItems, profile }: Props) {
 
   const handleClick = async (item: SidebarItem) => {
     if (item.action === "logout") {
-      await signOut({ callbackUrl: "/" });
+      await signOut({ callbackUrl: "/admin/login" });
       return;
     }
     if (item.href) router.push(item.href);

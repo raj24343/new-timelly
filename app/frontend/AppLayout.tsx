@@ -4,7 +4,6 @@ import { useState } from "react";
 import { SidebarItem } from "./types/sidebar";
 import AppSidebar from "./components/common/Sidebar";
 import AppHeader from "./components/common/AppHeader";
-;
 import MobileMoreOptions from "./components/mobilescreens/MobileMoreOptions";
 import BottomNavBar from "./components/mobilescreens/BottomNavbar";
 

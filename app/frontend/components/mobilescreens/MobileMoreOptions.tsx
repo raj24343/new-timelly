@@ -32,7 +32,7 @@ export default function MobileMoreOptions({
 
   const handleItemClick = async (item: SidebarItem) => {
     if (item.action === "logout") {
-      await signOut({ callbackUrl: "/" });
+      await signOut({ callbackUrl: "/admin/login" });
       return;
     }
     if (item.href) {

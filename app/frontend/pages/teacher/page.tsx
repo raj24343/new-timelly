@@ -1,5 +1,6 @@
 "use client";
 
+import { Suspense } from "react";
 import { useSession } from "next-auth/react";
 import { useSearchParams } from "next/navigation";
 import AppLayout from "../../AppLayout";
@@ -17,7 +18,7 @@ const TEACHER_TAB_TITLES: Record<string, string> = {
   settings: "Settings",
 };
 
-export default function TeacherDashboard() {
+function TeacherDashboardContent() {
   const { data: session } = useSession();
   const tab = useSearchParams().get("tab") ?? "dashboard";
   const title = TEACHER_TAB_TITLES[tab] ?? tab.toUpperCase();
@@ -37,5 +38,13 @@ export default function TeacherDashboard() {
         }
       />
     </RequiredRoles>
+  );
+}
+
+export default function TeacherDashboard() {
+  return (
+    <Suspense fallback={<div className="flex min-h-[40vh] items-center justify-center text-white/70">Loading...</div>}>
+      <TeacherDashboardContent />
+    </Suspense>
   );
 }
