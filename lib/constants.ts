@@ -22,3 +22,8 @@ export const LEAVE_TYPES = ["CASUAL", "SICK", "PAID", "UNPAID"] as const;
 export const LEAVE_STATUS = ["PENDING", "APPROVED", "REJECTED"] as const;
 
 export const CIRCULAR_REF_PREFIX = "CIR";
+
+export const EXAM_TERM_STATUS = [
+  { value: "UPCOMING", label: "Upcoming" },
+  { value: "COMPLETED", label: "Completed" },
+] as const;

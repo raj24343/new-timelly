@@ -123,6 +123,7 @@ export const authOptions: NextAuthOptions = {
         if (dbUser.allowedFeatures?.length !== undefined) {
           token.allowedFeatures = dbUser.allowedFeatures;
         }
+        token.schoolIsActive = true;
       }
     }
 
@@ -138,6 +139,7 @@ export const authOptions: NextAuthOptions = {
       mobile: token.mobile as string | null,
       studentId: token.studentId as string | null,
       allowedFeatures: (token.allowedFeatures as string[]) ?? [],
+      schoolIsActive: token.schoolIsActive as boolean | undefined,
     };
 
     return session;

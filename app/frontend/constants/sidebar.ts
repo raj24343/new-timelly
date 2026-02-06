@@ -311,6 +311,5 @@ export const SUPERADMIN_SIDEBAR_ITEMS: SidebarItem[] = [
         label: "Sign Out",
         action: "logout",
         icon: LogOut,
-        href: "#",
     },
 ];

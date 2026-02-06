@@ -149,41 +149,24 @@ export default function AddSchool() {
     setLoading(true);
 
     try {
-      const userRes = await fetch("/api/admin/signup", {
+      const res = await fetch("/api/superadmin/schools/create", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          name: form.schoolName,
+          schoolName: form.schoolName,
           email: form.email,
           password: form.password,
-          role: "SCHOOLADMIN",
+          address: [form.addressLine, form.area, form.city, form.district, form.state].filter(Boolean).join(", ") || form.schoolName,
+          location: form.area || form.city || "",
+          phone: form.phone || undefined,
         }),
       });
 
-      const userData = await userRes.json();
-      if (!userRes.ok) {
-        setError(userData.message || "Failed to create school admin");
+      const data = await res.json();
+      if (!res.ok) {
+        setError(data.message || "Failed to create school");
         return;
       }
-
-      const schoolAdminId = userData.user.id;
-
-      const schoolRes = await fetch("/api/school/create", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          name: form.schoolName,
-          address: form.addressLine,
-          location: form.area,
-        }),
-      });
-
-      const schoolData = await schoolRes.json();
-      if (!schoolRes.ok) {
-        setError(schoolData.message || "Failed to create school");
-        return;
-      }
-
       setShowSuccess(true);
     } catch (err) {
       setError("Something went wrong");
@@ -221,7 +204,7 @@ export default function AddSchool() {
     <>
       <form
         onSubmit={handleSignup}
-        className="w-full max-w-6xl mx-auto rounded-2xl p-4 sm:p-6 lg:p-8 shadow-sm border border-gray-500/20"
+        className="w-full max-w-6xl mx-auto rounded-2xl p-4 sm:p-6 lg:p-8 shadow-sm border border-white/10 overflow-x-hidden"
         style={{ backgroundColor: "rgba(255, 255, 255, 0.05)" }}
       >
         <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6">

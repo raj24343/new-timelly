@@ -36,6 +36,13 @@ export async function GET(req: Request) {
       );
     }
 
+    if (session.user.schoolIsActive === false) {
+      return NextResponse.json(
+        { message: "School is paused" },
+        { status: 403 }
+      );
+    }
+
     const { searchParams } = new URL(req.url);
     const rollNo = searchParams.get("rollNo")?.trim();
     const admissionNumber = searchParams.get("admissionNumber")?.trim();
