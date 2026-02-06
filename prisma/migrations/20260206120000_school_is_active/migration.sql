@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE "School" ADD COLUMN IF NOT EXISTS "isActive" BOOLEAN NOT NULL DEFAULT true;

@@ -62,26 +62,9 @@ export default function AddSchool() {
   const [error, setError] = useState("");
   const [showSuccess, setShowSuccess] = useState(false);
   const hasFieldErrors = Object.values(errors).some(Boolean);
-
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [logoFile, setLogoFile] = useState<File | null>(null);
   const [logoBase64, setLogoBase64] = useState<string | null>(null);
-
-  const handleFileSelect = () => {
-    fileInputRef.current?.click();
-  };
-
-  const handleFileChange = async (
-    e: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    if (e.target.files && e.target.files[0]) {
-      const file = e.target.files[0];
-      setLogoFile(file);
-
-      const base64 = await fileToBase64(file);
-      setLogoBase64(base64);
-    }
-  };
 
   /* ---------------- Input Handler ---------------- */
 
@@ -150,41 +133,24 @@ export default function AddSchool() {
     setLoading(true);
 
     try {
-      const userRes = await fetch("/api/admin/signup", {
+      const res = await fetch("/api/superadmin/schools/create", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          name: form.schoolName,
+          schoolName: form.schoolName,
           email: form.email,
           password: form.password,
-          role: "SCHOOLADMIN",
+          address: [form.addressLine, form.area, form.city, form.district, form.state].filter(Boolean).join(", ") || form.schoolName,
+          location: form.area || form.city || "",
+          phone: form.phone || undefined,
         }),
       });
 
-      const userData = await userRes.json();
-      if (!userRes.ok) {
-        setError(userData.message || "Failed to create school admin");
+      const data = await res.json();
+      if (!res.ok) {
+        setError(data.message || "Failed to create school");
         return;
       }
-
-      const schoolAdminId = userData.user.id;
-
-      const schoolRes = await fetch("/api/school/create", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          name: form.schoolName,
-          address: form.addressLine,
-          location: form.area,
-        }),
-      });
-
-      const schoolData = await schoolRes.json();
-      if (!schoolRes.ok) {
-        setError(schoolData.message || "Failed to create school");
-        return;
-      }
-
       setShowSuccess(true);
     } catch (err) {
       setError("Something went wrong");
@@ -218,21 +184,21 @@ export default function AddSchool() {
 
   /* ---------------- UI ---------------- */
 
-  return (
-    <>
-    <main className="flex-1 overflow-y-auto px-3 sm:px-4">
-      <div className="py-4 sm:p-6 bg-transparent min-h-screen">
-        <div className="w-full space-y-6">
-          <PageHeader
-            title="Add New School"
-            subtitle="Create a new school and onboard its admin here"
-            className="w-full mb-0"
-          />
-          <form
-            onSubmit={handleSignup}
-            className="w-full rounded-2xl p-4 sm:p-6 lg:p-8 shadow-sm border border-gray-500/20"
-            style={{ backgroundColor: "rgba(255, 255, 255, 0.05)" }}
-          >
+return (
+  <>
+  <main className="flex-1 overflow-y-auto px-3 sm:px-4">
+    <div className="py-4 sm:p-6 bg-transparent min-h-screen">
+      <div className="w-full space-y-6">
+        <PageHeader
+          title="Add New School"
+          subtitle="Create a new school and onboard its admin here"
+          className="w-full mb-0"
+        />
+        <form
+          onSubmit={handleSignup}
+          className="w-full rounded-2xl p-4 sm:p-6 lg:p-8 shadow-sm border border-gray-500/20"
+          style={{ backgroundColor: "rgba(255, 255, 255, 0.05)" }}
+        >
         <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6">
           <h1 className="text-xl sm:text-2xl font-semibold text-white">
             Add New School
