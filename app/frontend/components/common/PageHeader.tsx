@@ -30,7 +30,7 @@ export default function PageHeader({
         ${
           transparent
             ? "bg-transparent"
-            : "bg-gradient-to-r from-[#2b1c47] via-[#3a235a] to-[#4a5c2f]"
+            : "bg-white/5 backdrop-blur-xl border-b border-white/10"
         }
         ${className}
       `}
