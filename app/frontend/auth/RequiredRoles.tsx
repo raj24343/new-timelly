@@ -3,6 +3,7 @@
 import { ReactNode, useEffect } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import AuthLoadingFallback from "../components/common/AuthLoadingFallback";
 
 // Allowed roles from your schema
 type UserRoles = "SUPERADMIN" | "SCHOOLADMIN" | "TEACHER" | "STUDENT";
@@ -21,14 +22,26 @@ export default function RequireRole({ children, allowedRoles }: RequireRoleProps
 
     const role = session?.user?.role as UserRoles | undefined;
 
-    // If user is not logged in OR role doesn't match
-    if (!role || !allowedRoles.includes(role)) {
+    // If user is not logged in -> send to login (home shows login form)
+    if (status === "unauthenticated" || !session?.user) {
+      router.replace("/");
+      return;
+    }
+
+    // Only redirect to unauthorized when role is set and not in allowed list
+    // (avoids redirect when role is temporarily undefined during hydration)
+    if (role != null && !allowedRoles.includes(role)) {
       router.replace("/unauthorized");
     }
-  }, [session, status, router, allowedRoles]);
+  }, [session?.user?.role, session?.user, status, router, allowedRoles]);
 
   if (status === "loading") {
-    return <p>Loading...</p>;
+    return <AuthLoadingFallback />;
+  }
+
+  // Show loading while redirecting unauthenticated users
+  if (status === "unauthenticated") {
+    return <AuthLoadingFallback />;
   }
 
   return <>{children}</>;

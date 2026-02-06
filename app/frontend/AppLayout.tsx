@@ -4,7 +4,8 @@ import { useState } from "react";
 import { SidebarItem } from "./types/sidebar";
 import AppSidebar from "./components/common/Sidebar";
 import AppHeader from "./components/common/AppHeader";
-
+import MobileMoreOptions from "./components/mobilescreens/MobileMoreOptions";
+import BottomNavBar from "./components/mobilescreens/BottomNavbar";
 
 type Props = {
   title: string;
@@ -12,45 +13,53 @@ type Props = {
   profile: {
     name: string;
     subtitle?: string;
+    image?: string | null;
   };
+  activeTab: string;
   children?: React.ReactNode;
+  /** When true, header hides search and notification (e.g. for Super Admin) */
+  hideSearchAndNotifications?: boolean;
 };
 
 export default function AppLayout({
   title,
   menuItems,
   profile,
+  activeTab,
   children,
+  hideSearchAndNotifications = false,
 }: Props) {
-  const [mobileOpen, setMobileOpen] = useState(false);
+  const [showMore, setShowMore] = useState(false);
 
   return (
     <div className="flex h-screen overflow-hidden">
 
+      {/* DESKTOP SIDEBAR - profile from layout (sidebar + header show same) */}
       <aside className="hidden md:block">
         <AppSidebar menuItems={menuItems} profile={profile} />
       </aside>
 
-      <div className="flex-1 flex flex-col">
-        <AppHeader
-          title={title}
-          onMenuClick={() => setMobileOpen(true)}
-        />
-        <main className="flex-1 overflow-y-auto p-4 md:p-6">
+      {/* MAIN */}
+      <div className="flex-1 flex flex-col pb-16 md:pb-0">
+        <AppHeader title={title} profile={profile} hideSearchAndNotifications={hideSearchAndNotifications} />
+
+        <main className="flex-1 overflow-y-auto overflow-x-hidden no-scrollbar p-3 sm:p-4 md:p-6 min-h-0">
           {children}
         </main>
       </div>
 
-      {mobileOpen && (
-        <div className="fixed inset-0 z-50 bg-black/40 md:hidden">
-          <div className="w-64 h-full">
-            <AppSidebar
-              menuItems={menuItems}
-              profile={profile}
-              onClose={() => setMobileOpen(false)}
-            />
-          </div>
-        </div>
+      {/* MOBILE BOTTOM NAV */}
+      <BottomNavBar
+        menuItems={menuItems}
+        onMoreClick={() => setShowMore(true)}
+      />
+
+      {/* MORE OPTIONS SHEET */}
+      {showMore && (
+        <MobileMoreOptions
+          items={menuItems}
+          onClose={() => setShowMore(false)}
+        />
       )}
     </div>
   );

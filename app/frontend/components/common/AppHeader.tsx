@@ -1,123 +1,136 @@
 "use client";
 
-import { Bell, Menu } from "lucide-react";
+import { Bell, Search, Settings } from "lucide-react";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import SectionHeader from "./SectionHeader";
 import SearchInput from "./SearchInput";
-import { PRIMARY_COLOR } from "../../constants/colors";
 import NotificationPanel from "./NotificationPanel";
 import ProfileModal from "./ProfileModal";
 import { AVATAR_URL } from "../../constants/images";
 
+export type HeaderProfile = {
+  name: string;
+  subtitle?: string;
+  image?: string | null;
+};
 
 interface AppHeaderProps {
   title: string;
-  onMenuClick?: () => void;
+  profile?: HeaderProfile;
+  /** When true, do not show search and notification icons (e.g. Super Admin) */
+  hideSearchAndNotifications?: boolean;
 }
 
-// Header uses session data for avatar/name when available
-
-export default function AppHeader({
-  title,
-  onMenuClick,
-}: AppHeaderProps) {
+export default function AppHeader({ title, profile, hideSearchAndNotifications = false }: AppHeaderProps) {
+  const router = useRouter();
   const [showProfile, setShowProfile] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
+  const [showSearch, setShowSearch] = useState(false);
+
   const { data: session } = useSession();
-  const displayName = session?.user?.name ?? "User";
-  const avatarUrl = session?.user?.image ?? "/avatar.png";
+  const displayName = (profile?.name && profile.name.trim()) ? profile.name : (session?.user?.name ?? "User");
+  const avatarUrl = (profile?.image != null && profile.image !== "") ? profile.image : (session?.user?.image ?? AVATAR_URL);
 
   return (
     <>
-    <header
-        className="
-          sticky top-0 z-40
-          h-16 px-4 md:px-6
-          flex items-center justify-between
-          bg-white/10
-          backdrop-blur-xl
-          border-b border-white/10
-          shadow-[0_8px_32px_rgba(0,0,0,0.25)]
-        "
-      >
-        {/* LEFT */}
-        <div className="flex items-center gap-3">
-  {onMenuClick && (
-    <button
-      className="md:hidden p-2 rounded-lg hover:bg-white/10 transition"
-      onClick={onMenuClick}
-    >
-      <Menu className="text-white" />
-    </button>
-  )}
+      <header className="sticky top-0 z-40 bg-white/5 backdrop-blur-xl border-b border-white/10">
+        <div className="flex items-center justify-between px-4 md:px-6 py-3 md:py-4">
 
-  <div className="leading-tight">
-    <SectionHeader title={title} />
-    <p className="text-xs md:text-sm text-white/60">
-      Welcome back, {displayName.split(" ")[0]}
-    </p>
-  </div>
-</div>
+          {/* LEFT */}
+          <div>
+            <SectionHeader title={title} />
+            <p className="text-xs text-white/60 hidden md:block">
+              Welcome back, {displayName.split(" ")[0]}
+            </p>
+          </div>
 
+          {/* RIGHT */}
+          <div className="flex items-center gap-2 md:gap-4">
 
-        {/* RIGHT */}
-        <div className="flex items-center gap-2 md:gap-4">
-
-          {/* Notifications */}
-          <SearchInput showSearchIcon={true} />
-
+            {/* SEARCH - hidden for Super Admin */}
+            {!hideSearchAndNotifications && (
+              <>
+                <div className="hidden md:block">
+                  <SearchInput showSearchIcon />
+                </div>
                 <button
-          onClick={() => setShowNotifications(true)}
-          className="
-            relative p-2 rounded-xl
-            bg-white/5 hover:bg-white/10
-            transition
-          "
-        >
-            <Bell className="text-white" />
-            <span className="absolute -top-1 -right-1 h-2 w-2
-              rounded-full" style={style.notificatioDot} />
-          </button>
+                  className="md:hidden p-2 rounded-lg hover:bg-white/10"
+                  onClick={() => setShowSearch(true)}
+                >
+                  <Search className="text-white" />
+                </button>
+              </>
+            )}
 
-          {/* Avatar */}
-          <button
-          onClick={() => setShowProfile(true)}
-          className="
-            flex items-center gap-2
-            px-2 py-1.5 rounded-xl
-            bg-white/5 hover:bg-white/10
-            transition
-          "
-        >
-            <img
-              src={AVATAR_URL}
-              alt={displayName}
-              className="h-9 w-9 rounded-full cursor-pointer border border-white/20 object-cover"
-            />
-            <span className="hidden md:inline text-sm text-white/90">Profile</span>
-          </button>
+            {/* NOTIFICATIONS - hidden for Super Admin */}
+            {!hideSearchAndNotifications && (
+              <button
+                onClick={() => setShowNotifications(true)}
+                className="relative p-2 rounded-lg hover:bg-white/10"
+              >
+                <Bell className="text-white" />
+                <span className="absolute top-1 right-1 w-2 h-2 bg-lime-400 rounded-full" />
+              </button>
+            )}
+
+            {/* SETTINGS */}
+            <button
+              type="button"
+              className="p-2 rounded-lg hover:bg-white/10"
+              onClick={() => router.push("/settings")}
+              title="Settings"
+            >
+              <Settings className="text-white" />
+            </button>
+
+            {/* PROFILE - always show */}
+            <button
+              onClick={() => setShowProfile(true)}
+              className="p-1 rounded-xl bg-white/5 hover:bg-white/10 flex-shrink-0"
+              title="My profile"
+            >
+              <img
+                src={avatarUrl}
+                alt=""
+                className="w-9 h-9 rounded-lg border border-white/10 object-cover"
+              />
+            </button>
+          </div>
         </div>
       </header>
 
-      {/* Notification Panel */}
+      {/* PANELS */}
       {showNotifications && (
-        <NotificationPanel
-          onClose={() => setShowNotifications(false)}
+        <NotificationPanel onClose={() => setShowNotifications(false)} />
+      )}
+
+      {showProfile && (
+        <ProfileModal
+          profile={profile ? { name: profile.name, image: profile.image, role: profile.subtitle } : undefined}
+          onClose={() => setShowProfile(false)}
+          onOpenSettings={() => {
+            setShowProfile(false);
+            router.push("/settings");
+          }}
         />
       )}
 
-      {/* Profile Modal */}
-      {showProfile && (
-        <ProfileModal onClose={() => setShowProfile(false)} />
+      {/* MOBILE SEARCH PLACEHOLDER - only when search is shown */}
+      {!hideSearchAndNotifications && showSearch && (
+        <div className="fixed inset-0 z-50 bg-black/60 flex items-start p-4 md:hidden">
+          <div className="w-full bg-neutral-900 rounded-xl p-4">
+            <SearchInput/>
+            <button
+              onClick={() => setShowSearch(false)}
+              className="mt-3 text-sm text-white/60"
+            >
+              Close
+            </button>
+          </div>
+        </div>
       )}
     </>
   );
-}
-
-
-const style = {
-  notificatioDot: {
-    backgroundColor: `${PRIMARY_COLOR}`
-  }
 }

@@ -19,6 +19,14 @@ export async function GET() {
   if (!schoolId) {
     return NextResponse.json({ school: null }, { status: 200 });
   }
+
+  if (session.user.schoolIsActive === false) {
+    return NextResponse.json(
+      { message: "School is paused", school: null },
+      { status: 403 }
+    );
+  }
+
   const cachedKey = `school:${schoolId}`;
   const cachedSchool = await redis.get(cachedKey);
   if (cachedSchool) {

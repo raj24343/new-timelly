@@ -89,6 +89,7 @@ model User {
 
   // News Feed
   newsFeedsCreated NewsFeed[] @relation("NewsFeedCreator")
+  newsFeedLikes   NewsFeedLike[]
   circularsIssued  Circular[]
 
   // Communication
@@ -201,6 +202,7 @@ model School {
   name                 String
   address              String
   location             String
+  isActive             Boolean               @default(true)
   //library
   libraryIssues        LibraryIssue[]
   admins               User[]                @relation("SchoolAdmin")
@@ -352,18 +354,33 @@ model ExamSchedule {
 }
 
 model SyllabusTracking {
-  id               String   @id @default(cuid())
+  id               String        @id @default(cuid())
   termId           String
-  term             ExamTerm @relation(fields: [termId], references: [id], onDelete: Cascade)
+  term             ExamTerm      @relation(fields: [termId], references: [id], onDelete: Cascade)
   subject          String
-  completedPercent Int      @default(0) // 0-100
-  notes            String?  @db.Text
+  completedPercent Int           @default(0) // 0-100
+  notes            String?       @db.Text
+  units            SyllabusUnit[]
 
   updatedAt DateTime @updatedAt
   createdAt DateTime @default(now())
 
   @@unique([termId, subject])
   @@index([termId])
+}
+
+model SyllabusUnit {
+  id               String   @id @default(cuid())
+  trackingId       String
+  tracking         SyllabusTracking @relation(fields: [trackingId], references: [id], onDelete: Cascade)
+  unitName         String
+  completedPercent Int      @default(0)
+  order            Int      @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([trackingId])
 }
 
 model Student {
@@ -575,7 +592,7 @@ model NewsFeed {
   id          String  @id @default(cuid())
   title       String
   description String  @db.Text
-  photo       String? // URL or file path
+  photo       String? // URL or base64
   likes       Int      @default(0)
   // Relations
   schoolId String
@@ -584,11 +601,27 @@ model NewsFeed {
   createdById String
   createdBy   User   @relation("NewsFeedCreator", fields: [createdById], references: [id], onDelete: Cascade)
 
+  likedBy   NewsFeedLike[]
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   @@index([schoolId])
   @@index([createdById])
+}
+
+model NewsFeedLike {
+  id         String   @id @default(cuid())
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  newsFeedId String
+  newsFeed   NewsFeed @relation(fields: [newsFeedId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+
+  @@unique([userId, newsFeedId])
+  @@index([newsFeedId])
+  @@index([userId])
 }
 
 // =====================

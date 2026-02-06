@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import { useSession } from "next-auth/react"
 import { motion, AnimatePresence } from "framer-motion"
 import {
   School,
@@ -59,9 +60,27 @@ const actions = [
 export default function PrincipalPage() {
   const [active, setActive] = useState(actions[0])
   const [sidebarOpen, setSidebarOpen] = useState(false)
+  const { data: session } = useSession()
+
+  const schoolPaused = Boolean(
+    session?.user?.schoolId && session?.user?.schoolIsActive === false
+  )
+
+  if (schoolPaused) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-[#020617] p-6">
+        <div className="max-w-md rounded-2xl border border-amber-500/30 bg-amber-500/10 p-8 text-center">
+          <h1 className="text-xl font-bold text-amber-400">School is paused</h1>
+          <p className="mt-2 text-white/80 text-sm">
+            Your school has been deactivated by the super admin. All working tabs are paused until the school is activated again.
+          </p>
+        </div>
+      </div>
+    )
+  }
 
   return (
-    <div className="flex min-h-screen bg-black">
+    <div className="flex min-h-screen" style={{ background: "var(--overlay,#020617)" }}>
       {/* Mobile Menu */}
       <button
         onClick={() => setSidebarOpen(!sidebarOpen)}
