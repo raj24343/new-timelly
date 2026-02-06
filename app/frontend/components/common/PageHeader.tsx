@@ -6,32 +6,30 @@ import { motion } from "framer-motion";
 interface PageHeaderProps {
   title: string;
   subtitle?: string;
-  rightSlot?: ReactNode; // buttons, filters, actions
-  className?: string;   // extra Tailwind classes
-  center?: boolean;     // center align content
-  transparent?: boolean; // transparent background
+  icon?: ReactNode;
+  rightSlot?: ReactNode;
+  className?: string;
+  center?: boolean;
+  transparent?: boolean;
 }
 
 export default function PageHeader({
   title,
   subtitle,
+  icon,
   rightSlot,
   className = "",
   center = false,
   transparent = false,
 }: PageHeaderProps) {
-  return (
-    <motion.div
+  return (  
+     <motion.div
       initial={{ opacity: 0, y: -10 }}
       animate={{ opacity: 1, y: 0 }}
       className={`
         rounded-3xl p-6 mb-8
         flex flex-col md:flex-row md:items-center md:justify-between gap-4
-        ${
-          transparent
-            ? "bg-transparent"
-            : "bg-white/5 backdrop-blur-xl border-b border-white/10"
-        }
+        ${transparent ? "bg-transparent" : "bg-white/5 backdrop-blur-xl border-b border-white/10"}
         ${className}
       `}
     >
@@ -47,8 +45,9 @@ export default function PageHeader({
         )}
       </div>
 
+      {/* RIGHT */}
       {rightSlot && (
-        <div className={center ? "flex justify-center" : ""}>
+        <div className={center ? "flex justify-center" : "shrink-0"}>
           {rightSlot}
         </div>
       )}

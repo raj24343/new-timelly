@@ -6,14 +6,15 @@ import AppLayout from "../../AppLayout";
 import { SCHOOLADMIN_MENU_ITEMS, SCHOOLADMIN_TAB_TITLES } from "../../constants/sidebar";
 import RequiredRoles from "../../auth/RequiredRoles";
 import SchoolAdminStudentsTab from "../../components/schooladmin/Students";
-import SchoolAdminAddUserTab from "../../components/schooladmin/AddUser";
 import SchoolAdminClassesTab from "../../components/schooladmin/Classes";
-import SchoolAdminDashboard from "../../components/schooladmin/Dashboard";
 import SchoolTeacherLeavesTab from "../../components/schooladmin/TeacherLeaves";
-import SchoolCercularsTab from "../../components/schooladmin/circulars";
+// import SchoolCercularsTab from "../../components/schooladmin/circulars";
 import NewsFeed from "../../components/schooladmin/Newsfeed";
 import TeacherAuditTab from "../../components/schooladmin/TeacherAudit";
 import { ExamsPageInner } from "@/app/schoolAdmin/exams/page";
+import AddUser from "../../components/schooladmin/AddUser";
+import SchoolAdminTeacherTab from "../../components/schooladmin/teacherTab";
+import SchoolAdminCircularsTab from "../../components/schooladmin/circularTab";
 
 function SchoolAdminContent() {
   const tab = useSearchParams().get("tab") ?? "dashboard";
@@ -54,13 +55,13 @@ function SchoolAdminContent() {
       case "students":
         return <SchoolAdminStudentsTab/>;
       case "add-user":
-        return <SchoolAdminAddUserTab/>;
+        return <AddUser/>
       case "classes":
         return <SchoolAdminClassesTab/>;
       case "student-details":
         return ;
       case "teachers":
-        return;
+        return <SchoolAdminTeacherTab/>
       case "teacher-leaves":
         return <SchoolTeacherLeavesTab/>;
       case "teacher-audit":
@@ -69,6 +70,8 @@ function SchoolAdminContent() {
         return;
       case "newsfeed":
         return <NewsFeed/>;
+        case "circulars":
+        return <SchoolAdminCircularsTab/>;
       case "certificates":
         return;
       case "exams":
@@ -79,8 +82,8 @@ function SchoolAdminContent() {
         return;
       case "settings":
         return;
-      case "circulars":
-        return <SchoolCercularsTab/>;
+      // case "circulars":
+      //   return <SchoolCercularsTab/>;
       default:
         return <div>Not found</div>;
     }
