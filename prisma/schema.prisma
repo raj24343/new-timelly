@@ -25,7 +25,10 @@ enum LeaveStatus {
   PENDING
   APPROVED
   REJECTED
+  CONDITIONALLY_APPROVED
 }
+
+
 
 enum LeaveType {
   CASUAL
