@@ -24,8 +24,10 @@ enum Role {
 enum LeaveStatus {
   PENDING
   APPROVED
+  CONDITIONALLY_APPROVED
   REJECTED
 }
+
 
 enum LeaveType {
   CASUAL
