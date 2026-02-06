@@ -10,11 +10,10 @@ type ApproveType = "FULL" | "CONDITIONAL";
 
 export async function PATCH(
   req: Request,
-  { params }: { params: Params | Promise<Params> }
+  { params }: { params: Params | Promise<Params> } // ✅ fix here
 ) {
   try {
-    // 1️⃣ Get leave ID
-    const { id } = await params;
+    const { id } = await params; // ✅ fix here
 
     if (!id) {
       return new Response(
@@ -23,7 +22,7 @@ export async function PATCH(
       );
     }
 
-    // 2️⃣ Auth check
+    // 1️⃣ Auth check
     const session = await getServerSession(authOptions);
     if (!session?.user?.id) {
       return new Response(
@@ -32,11 +31,19 @@ export async function PATCH(
       );
     }
 
-    // 3️⃣ Parse body
-    const body = await req.json();
-    const { type, remarks }: { type: ApproveType; remarks?: string } = body;
+    // OPTIONAL: role check
+    if (!["SCHOOLADMIN", "ADMIN"].includes(session.user.role)) {
+      return new Response(
+        JSON.stringify({ error: "Permission denied" }),
+        { status: 403 }
+      );
+    }
 
-    if (!type || !["FULL", "CONDITIONAL"].includes(type)) {
+    // 2️⃣ Parse body
+    const { type, remarks }: { type: ApproveType; remarks?: string } =
+      await req.json();
+
+    if (!["FULL", "CONDITIONAL"].includes(type)) {
       return new Response(
         JSON.stringify({ error: "Invalid approval type" }),
         { status: 400 }
@@ -52,49 +59,63 @@ export async function PATCH(
       );
     }
 
-    // 4️⃣ Ensure leave exists & is pending
-    const existingLeave = await prisma.leaveRequest.findUnique({
+    // 3️⃣ Fetch leave request
+    const leave = await prisma.leaveRequest.findUnique({
       where: { id },
-      select: { status: true }
+      select: {
+        id: true,
+        status: true,
+        schoolId: true
+      }
     });
 
-    if (!existingLeave) {
+    if (!leave) {
       return new Response(
         JSON.stringify({ error: "Leave request not found" }),
         { status: 404 }
       );
     }
 
-    if (existingLeave.status !== "PENDING") {
+    // OPTIONAL: school isolation
+    if (leave.schoolId !== session.user.schoolId) {
+      return new Response(
+        JSON.stringify({ error: "Invalid school access" }),
+        { status: 403 }
+      );
+    }
+
+    if (leave.status !== "PENDING") {
       return new Response(
         JSON.stringify({
-          error: `Leave is already ${existingLeave.status.toLowerCase()}`
+          error: `Leave already ${leave.status.toLowerCase()}`
         }),
         { status: 409 }
       );
     }
 
-    // 5️⃣ Update leave
-    const leave = await prisma.leaveRequest.update({
+    // 4️⃣ Update leave
+    const updatedLeave = await prisma.leaveRequest.update({
       where: { id },
       data: {
         status:
           type === "CONDITIONAL"
             ? "CONDITIONALLY_APPROVED"
             : "APPROVED",
-        remarks: remarks || null,
+        remarks: type === "CONDITIONAL" ? remarks!.trim() : null,
         approverId: session.user.id
       }
     });
 
-    // 6️⃣ Success response
-    return new Response(JSON.stringify(leave), { status: 200 });
+    // 5️⃣ Success
+    return new Response(JSON.stringify(updatedLeave), {
+      status: 200
+    });
 
-  } catch (err: any) {
-    console.error("Approve leave failed:", err);
+  } catch (error: any) {
+    console.error("Leave approval failed:", error);
     return new Response(
       JSON.stringify({
-        error: err.message || "Unable to approve leave"
+        error: error.message || "Something went wrong"
       }),
       { status: 500 }
     );
