@@ -1,5 +1,6 @@
 import { Plus, Save } from "lucide-react";
 import SearchInput from "../../common/SearchInput";
+import SelectInput from "../../common/SelectInput";
 
 export default function AddClassPanel() {
   return (
@@ -22,10 +23,13 @@ export default function AddClassPanel() {
           showSearchIcon={false}
         />
 
-        <SearchInput
+        <SelectInput
           label="Class Teacher"
-          placeholder="Select Teacher"
-          showSearchIcon={false}
+          options={[
+            { label: "Select Teacher", value: "", disabled: true },
+            { label: "Mrs. Priya Sharma", value: "priya-sharma" },
+            { label: "Mr. Rajesh Kumar", value: "rajesh-kumar" },
+          ]}
         />
 
         <SearchInput
@@ -36,10 +40,10 @@ export default function AddClassPanel() {
       </div>
 
       <div className="mt-4 flex items-center justify-end gap-2">
-        <button className="rounded-xl border border-white/10 bg-white/5 px-3.5 py-2 text-xs font-semibold text-white/70 hover:bg-white/10">
+        <button className="rounded-xl border border-white/10 bg-white/5 px-3.5 py-2 text-xs font-semibold text-white/70 hover:bg-white/10 cursor-pointer">
           Cancel
         </button>
-        <button className="inline-flex items-center gap-2 rounded-xl bg-lime-400 px-3.5 py-2 text-xs font-semibold text-black hover:bg-lime-300">
+        <button className="inline-flex items-center gap-2 rounded-xl bg-lime-400 px-3.5 py-2 text-xs font-semibold text-black hover:bg-lime-300 cursor-pointer">
           <Save size={14} />
           Save Class
         </button>

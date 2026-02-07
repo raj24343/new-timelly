@@ -1,5 +1,6 @@
 import { Plus, Save } from "lucide-react";
 import SearchInput from "../../common/SearchInput";
+import SelectInput from "../../common/SelectInput";
 
 export default function AddSectionPanel() {
   return (
@@ -10,10 +11,13 @@ export default function AddSectionPanel() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3">
-        <SearchInput
+        <SelectInput
           label="Select Class"
-          placeholder="Select Class"
-          showSearchIcon={false}
+          options={[
+            { label: "Select Class", value: "", disabled: true },
+            { label: "Class 10", value: "class-10" },
+            { label: "Class 9", value: "class-9" },
+          ]}
         />
 
         <SearchInput
@@ -22,18 +26,21 @@ export default function AddSectionPanel() {
           showSearchIcon={false}
         />
 
-        <SearchInput
+        <SelectInput
           label="Class Teacher"
-          placeholder="Select Teacher"
-          showSearchIcon={false}
+          options={[
+            { label: "Select Teacher", value: "", disabled: true },
+            { label: "Mrs. Priya Sharma", value: "priya-sharma" },
+            { label: "Mr. Rajesh Kumar", value: "rajesh-kumar" },
+          ]}
         />
       </div>
 
       <div className="mt-4 flex items-center justify-end gap-2">
-        <button className="rounded-xl border border-white/10 bg-white/5 px-3.5 py-2 text-xs font-semibold text-white/70 hover:bg-white/10">
+        <button className="rounded-xl border border-white/10 bg-white/5 px-3.5 py-2 text-xs font-semibold text-white/70 hover:bg-white/10 cursor-pointer">
           Cancel
         </button>
-        <button className="inline-flex items-center gap-2 rounded-xl bg-lime-400 px-3.5 py-2 text-xs font-semibold text-black hover:bg-lime-300">
+        <button className="inline-flex items-center gap-2 rounded-xl bg-lime-400 px-3.5 py-2 text-xs font-semibold text-black hover:bg-lime-300 cursor-pointer">
           <Save size={14} />
           Save Section
         </button>

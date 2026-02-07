@@ -14,46 +14,45 @@ export default function SchoolAdminClassesTab() {
   };
 
   return (
-    <div className="min-h-screen p-3 sm:p-4 md:p-6 text-white overflow-x-hidden">
-      <div className="pt-0 bg-transparent min-h-screen space-y-6">
+    <div className="p-4 md:p-6 pb-24 lg:pb-6">
+      <div className="max-w-7xl mx-auto space-y-6 text-gray-200 pb-12">
 
         {/* ================= HEADER ================= */}
         <PageHeader
           title="Classes Management"
           subtitle="Manage all classes, sections, and class teachers"
+          className = "bg-white/5 backdrop-blur-xl rounded-2xl p-6 shadow-lg border border-white/10 flex flex-col md:flex-row md:items-center justify-between gap-4"
           rightSlot={
-            <div className="flex w-full lg:w-auto justify-start lg:justify-end">
-              <div className="flex w-full flex-wrap items-center gap-2 px-2 sm:px-3 py-2 overflow-x-auto sm:overflow-visible whitespace-nowrap">
+                <div className="flex flex-wrap items-center gap-3">
                 <button
                   onClick={() => setActiveAction("class")}
-                  className="inline-flex items-center gap-2 rounded-xl bg-lime-400 px-3 py-2 text-sm font-semibold text-black shadow-[0_6px_18px_rgba(163,230,53,0.35)] transition hover:bg-lime-300 shrink-0"
+                  className="inline-flex w-full sm:w-auto items-center gap-2 rounded-xl bg-lime-400 px-3 py-2 text-sm font-semibold text-black shadow-[0_6px_18px_rgba(163,230,53,0.35)] transition hover:bg-lime-300 shrink-0 cursor-pointer justify-center sm:justify-start"
                 >
                   <ChevronDown size={16} />
                   <span className={activeAction === "class" ? "inline" : "hidden sm:inline"}>Add Class</span>
                 </button>
                 <button
                   onClick={() => setActiveAction("section")}
-                  className="inline-flex items-center gap-2 rounded-xl border border-white/10 bg-white/10 px-3 py-2 text-sm font-semibold text-white/80 transition hover:bg-white/20 shrink-0"
+                  className="inline-flex w-full sm:w-auto items-center gap-2 rounded-xl border border-white/10 bg-white/10 px-3 py-2 text-sm font-semibold text-white/80 transition hover:bg-white/20 shrink-0 cursor-pointer justify-center sm:justify-start"
                 >
                   <Plus size={16} />
                   <span className={activeAction === "section" ? "inline" : "hidden sm:inline"}>Add Section</span>
                 </button>
                 <button
                   onClick={() => setActiveAction("csv")}
-                  className="inline-flex items-center gap-2 rounded-xl border border-white/10 bg-white/10 px-3 py-2 text-sm font-semibold text-white/80 transition hover:bg-white/20 shrink-0"
+                  className="inline-flex w-full sm:w-auto items-center gap-2 rounded-xl border border-white/10 bg-white/10 px-3 py-2 text-sm font-semibold text-white/80 transition hover:bg-white/20 shrink-0 cursor-pointer justify-center sm:justify-start"
                 >
                   <Upload size={16} />
                   <span className={activeAction === "csv" ? "inline" : "hidden sm:inline"}>Upload CSV</span>
                 </button>
                 <button
                   onClick={handleReportClick}
-                  className="inline-flex items-center gap-2 rounded-xl border border-white/10 bg-white/10 px-3 py-2 text-sm font-semibold text-white/80 transition hover:bg-white/20 shrink-0"
+                  className="inline-flex w-full sm:w-auto items-center gap-2 rounded-xl border border-white/10 bg-white/10 px-3 py-2 text-sm font-semibold text-white/80 transition hover:bg-white/20 shrink-0 cursor-pointer justify-center sm:justify-start"
                 >
                   <Download size={16} />
                   <span className="hidden sm:inline">Report</span>
                 </button>
-              </div>
-            </div>
+             </div>
           }
         />
 
