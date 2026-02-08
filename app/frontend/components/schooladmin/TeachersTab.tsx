@@ -1,6 +1,5 @@
 "use client";
 
-import StatCard from "../common/statCard";
 import PageHeader from "../common/PageHeader";
 import {
     Plus,
@@ -11,7 +10,8 @@ import {
     Clock,
     XCircle,
 } from "lucide-react";
-import TeacherStatCard from "./teachersTab/teacherStatCard";
+import TeacherStatCard from "./teacherstab/teacherStatCard";
+import StatCard from "../common/StatCard";
 
 
 const SchoolAdminTeacherTab = () => {
