@@ -9,6 +9,7 @@ import SchoolAdminStudentsTab from "../../components/schooladmin/Students";
 import SchoolAdminClassesTab from "../../components/schooladmin/Classes";
 import SchoolTeacherLeavesTab from "../../components/schooladmin/TeacherLeaves";
 import NewsFeed from "../../components/schooladmin/Newsfeed";
+import WorkshopsAndEventsTab from "../../components/schooladmin/workshopsandevents";
 import TeacherAuditTab from "../../components/schooladmin/TeacherAudit";
 import AddUser from "../../components/schooladmin/AddUser";
 import SchoolAdminFeesTab from "../../components/schooladmin/Fees";
@@ -19,7 +20,8 @@ import { ExamsPageInner } from "../../components/schooladmin/Exams";
 import SchoolAdminAnalysisTab from "../../components/schooladmin/Analysis";
 import SchoolAdminSettingsTab from "../../components/schooladmin/Settings";
 import SchoolAdminTeacherTab from "../../components/schooladmin/TeachersTab";
-import SchoolAdminCircularsTab from "../../components/schooladmin/CircularTab";
+import SchoolAdminCircularsTab from "../../components/schooladmin/circularTab";
+
 
 function SchoolAdminContent() {
   const tab = useSearchParams().get("tab") ?? "dashboard";
@@ -72,7 +74,7 @@ function SchoolAdminContent() {
       case "teacher-audit":
         return <TeacherAuditTab />;
       case "workshops":
-        return ;
+        return <WorkshopsAndEventsTab/>;
       case "newsfeed":
         return <NewsFeed/>;
         case "circulars":
