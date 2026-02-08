@@ -19,7 +19,8 @@ import { ExamsPageInner } from "../../components/schooladmin/Exams";
 import SchoolAdminAnalysisTab from "../../components/schooladmin/Analysis";
 import SchoolAdminSettingsTab from "../../components/schooladmin/Settings";
 import SchoolAdminTeacherTab from "../../components/schooladmin/TeachersTab";
-import SchoolAdminCircularsTab from "../../components/schooladmin/CircularTab";
+import SchoolAdminCircularsTab from "../../components/schooladmin/circularTab";
+
 
 function SchoolAdminContent() {
   const tab = useSearchParams().get("tab") ?? "dashboard";
