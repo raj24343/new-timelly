@@ -77,7 +77,7 @@ export const SCHOOLADMIN_MENU_ITEMS: SidebarItem[] = [
     {
         label: "Dashboard",
         tab: "dashboard",
-        href: "/frontend/pages/schooladmin",
+        href: "/frontend/pages/schooladmin?tab=dashboard",
         icon: Home,
         permission: Permission.DASHBOARD,
     },
@@ -199,7 +199,7 @@ export const SCHOOLADMIN_TAB_TITLES: Record<string, string> = {
     "teacher-leaves": "Teacher Leaves",
     "tc-approvals": "TC Approvals",
     payments: "Payments",
-    workshops: "Workshops",
+    workshops: "Workshops & Events",
     newsfeed: "Newsfeed",
     exams: "Exams",
     analysis: "Analysis",
