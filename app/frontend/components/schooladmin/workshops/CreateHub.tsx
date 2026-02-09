@@ -89,7 +89,7 @@ export default function CreateHub({ events }: CreateHubProps) {
               {events.length} Events
             </div>
           </div>
-          <div className="mt-4 space-y-3">
+          <div className="mt-4 space-y-3 h-[240px] overflow-y-auto no-scrollbar pr-1">
             {events.map((event) => {
               const isSelected = event.id === selectedEventId;
               return (

@@ -13,6 +13,9 @@ interface EventCardProps {
   status?: "upcoming" | "completed";
   photo?: string | null;
   additionalInfo?: string | null;
+  onViewDetails?: () => void;
+  onEdit?: () => void;
+  onDelete?: () => void;
 }
 
 const modeStyles: Record<string, string> = {
@@ -58,6 +61,9 @@ export default function EventCard({
   status,
   photo,
   additionalInfo,
+  onViewDetails,
+  onEdit,
+  onDelete,
 }: EventCardProps) {
   const badgeMode = (mode || "").toLowerCase();
   const modeClass = modeStyles[badgeMode] ?? "bg-white/10 text-white/80";
@@ -65,7 +71,7 @@ export default function EventCard({
 
   return (
     <article className="overflow-hidden rounded-3xl border border-white/10 bg-white/5 backdrop-blur-xl shadow-xl">
-      <div className="relative h-48 bg-white/10">
+      <div className="relative h-44 sm:h-48 bg-white/10">
         {photo ? (
           <img src={photo} alt={title} className="h-full w-full object-cover" />
         ) : (
@@ -84,22 +90,24 @@ export default function EventCard({
         </div>
       </div>
 
-      <div className="px-6 py-5 text-white">
+      <div className="px-4 py-4 sm:px-6 sm:py-5 text-white">
         <div className="flex items-start gap-3">
           <div className="flex-1">
-            <h3 className="text-lg font-semibold text-white">{title}</h3>
+            <h3 className="text-base sm:text-lg font-semibold text-white">{title}</h3>
           </div>
           <div className="ml-auto flex items-center gap-0">
             <button
               type="button"
-              className="h-9 w-9 rounded-xl text-white/70 hover:text-white transition"
+              onClick={onEdit}
+              className="h-9 w-9 rounded-xl text-white/70 hover:text-white transition cursor-pointer"
               aria-label="Edit"
             >
               <Pencil size={12} />
             </button>
             <button
               type="button"
-              className="h-9 w-9 rounded-xl text-white/60 hover:text-red-400 transition"
+              onClick={onDelete}
+              className="h-9 w-9 rounded-xl text-white/60 hover:text-red-400 transition cursor-pointer"
               aria-label="Delete"
             >
               <Trash2 size={12} />
@@ -115,7 +123,7 @@ export default function EventCard({
             ) : null}
           </div>
 
-        <div className="mt-4 rounded-2xl border border-white/10 bg-white/10 px-4 py-4 text-xs text-white/80 grid grid-cols-2 gap-3">
+        <div className="mt-4 rounded-2xl border border-white/10 bg-white/10 px-4 py-4 text-[11px] sm:text-xs text-white/80 grid grid-cols-2 gap-3">
           <div className="flex items-center gap-2">
             <CalendarDays size={14} className="text-lime-300" />
             <span>{formatDate(eventDate) || "Date"}</span>
@@ -143,7 +151,8 @@ export default function EventCard({
 
         <button
           type="button"
-          className="mt-4 w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-2.5 text-sm font-semibold text-white/80 hover:bg-white/10 transition"
+          onClick={onViewDetails}
+          className="mt-4 w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-2.5 text-sm font-semibold text-white/80 hover:bg-white/10 transition cursor-pointer"
         >
           View Details
         </button>

@@ -5,8 +5,10 @@ import PageHeader from "../common/PageHeader";
 import CreateHub from "./workshops/CreateHub";
 import CreateEventForm from "./workshops/CreateEventForm";
 import EventCard from "./workshops/EventCard";
+import EventDetailsModal from "./workshops/EventDetailsModal";
+import DeleteEventModal from "./workshops/DeleteEventModal";
 import { CalendarDays, CheckCircle, List, Plus, Users, X } from "lucide-react";
-import { ReactNode, useEffect, useMemo, useState } from "react";
+import { ReactNode, useEffect, useMemo, useRef, useState } from "react";
 
 interface EventItem {
   id: string;
@@ -19,6 +21,11 @@ interface EventItem {
   teacher?: { name?: string | null } | null;
   photo?: string | null;
   _count?: { registrations: number };
+  type?: string | null;
+  level?: string | null;
+  class?: { id: string; name: string; section?: string | null } | null;
+  teacherId?: string | null;
+  schoolId?: string | null;
 }
 
 export default function WorkshopsAndEventsTab() {
@@ -26,6 +33,17 @@ export default function WorkshopsAndEventsTab() {
   const [events, setEvents] = useState<EventItem[]>([]);
   const [loadingEvents, setLoadingEvents] = useState(false);
   const [eventsError, setEventsError] = useState<string | null>(null);
+  const [detailsOpen, setDetailsOpen] = useState(false);
+  const [selectedEventId, setSelectedEventId] = useState<string | null>(null);
+  const [detailsLoading, setDetailsLoading] = useState(false);
+  const [detailsError, setDetailsError] = useState<string | null>(null);
+  const [eventDetails, setEventDetails] = useState<EventItem | null>(null);
+  const [editingEvent, setEditingEvent] = useState<EventItem | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<EventItem | null>(null);
+  const [deleteLoading, setDeleteLoading] = useState(false);
+  const formRef = useRef<HTMLDivElement | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const pageSize = 3;
 
   const fetchEvents = async () => {
     try {
@@ -47,6 +65,46 @@ export default function WorkshopsAndEventsTab() {
   useEffect(() => {
     fetchEvents();
   }, []);
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [events.length]);
+
+  useEffect(() => {
+    if (activeAction !== "workshop") return;
+    const timer = setTimeout(() => {
+      formRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }, 120);
+    return () => clearTimeout(timer);
+  }, [activeAction]);
+
+  useEffect(() => {
+    if (!detailsOpen || !selectedEventId) return;
+
+    const controller = new AbortController();
+    const fetchDetails = async () => {
+      try {
+        setDetailsLoading(true);
+        setDetailsError(null);
+        const res = await fetch(`/api/events/create/${selectedEventId}`, {
+          signal: controller.signal,
+        });
+        const data = await res.json();
+        if (!res.ok) {
+          throw new Error(data?.message || "Failed to load event details");
+        }
+        setEventDetails(data?.event ?? null);
+      } catch (err: any) {
+        if (err?.name === "AbortError") return;
+        setDetailsError(err?.message || "Failed to load event details");
+      } finally {
+        setDetailsLoading(false);
+      }
+    };
+
+    fetchDetails();
+    return () => controller.abort();
+  }, [detailsOpen, selectedEventId]);
 
   const stats = useMemo(() => {
     const now = Date.now();
@@ -73,6 +131,13 @@ export default function WorkshopsAndEventsTab() {
     };
   }, [events]);
 
+  const totalPages = Math.max(1, Math.ceil(events.length / pageSize));
+  const clampedPage = Math.min(currentPage, totalPages);
+  const pagedEvents = events.slice(
+    (clampedPage - 1) * pageSize,
+    clampedPage * pageSize
+  );
+
   const StatTile = ({
     title,
     value,
@@ -84,14 +149,14 @@ export default function WorkshopsAndEventsTab() {
   }) => (
     <div className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 md:px-5 md:py-4 shadow-lg backdrop-blur-xl">
       <div className="flex items-center gap-4">
-        <div className="h-12 w-12 rounded-xl bg-white/10 flex items-center justify-center text-lime-400">
+        <div className="h-11 w-11 sm:h-12 sm:w-12 rounded-xl bg-white/10 flex items-center justify-center text-lime-400">
           {icon}
         </div>
         <div>
           <div className="text-xs uppercase tracking-wide text-white/60">
             {title}
           </div>
-          <div className="text-2xl font-semibold text-white">{value}</div>
+          <div className="text-xl sm:text-2xl font-semibold text-white">{value}</div>
         </div>
       </div>
     </div>
@@ -124,15 +189,16 @@ export default function WorkshopsAndEventsTab() {
     return (
       <>
         {/* MOBILE */}
-        <div className="xl:hidden">
+        <div className="xl:hidden w-full">
           {isActive ? (
-            cancelButton
+            <div className="w-full">{cancelButton}</div>
           ) : (
             <button
               onClick={effectiveOnClick}
-              className="h-10 w-10 flex items-center justify-center rounded-xl border border-white/10 bg-white/5 text-white/70 hover:bg-white/10"
+              className="w-full inline-flex items-center justify-center gap-2 rounded-full bg-lime-400 px-5 py-2 text-sm font-semibold text-black shadow-[0_6px_18px_rgba(163,230,53,0.35)] hover:bg-lime-300 transition cursor-pointer"
             >
-              <Icon size={18} />
+              <Icon size={16} />
+              <span>{effectiveLabel}</span>
             </button>
           )}
         </div>
@@ -155,12 +221,12 @@ export default function WorkshopsAndEventsTab() {
   };
 
   return (
-    <div className="px-4 md:px-6 pb-24 lg:pb-6 text-gray-200">
+    <div className="px-3 sm:px-4 md:px-6 pb-24 lg:pb-6 text-gray-200">
       <div className="w-full space-y-6">
         <PageHeader
           title="Workshops & Events"
           subtitle="Plan, manage, and issue certificates for workshops and events"
-          className="bg-white/5 backdrop-blur-xl rounded-2xl p-5 sm:p-6 border border-white/10 shadow-lg flex flex-col xl:flex-row xl:items-center justify-between gap-4"
+          className="bg-white/5 backdrop-blur-xl rounded-2xl p-4 sm:p-5 md:p-6 border border-white/10 shadow-lg flex flex-col xl:flex-row xl:items-center justify-between gap-4"
           rightSlot={
             <div className="w-full xl:w-auto">
               <div className="flex flex-wrap gap-2 sm:gap-3 xl:justify-end">
@@ -168,7 +234,10 @@ export default function WorkshopsAndEventsTab() {
                   "workshop",
                   Plus,
                   "Create Event",
-                  () => setActiveAction("workshop"),
+                  () => {
+                    setEditingEvent(null);
+                    setActiveAction("workshop");
+                  },
                   true
                 )}
               </div>
@@ -186,19 +255,61 @@ export default function WorkshopsAndEventsTab() {
         <CreateHub events={events} />
 
         {activeAction === "workshop" && (
-          <CreateEventForm
-            onCancel={() => setActiveAction("none")}
-            onCreated={fetchEvents}
-          />
+          <div ref={formRef}>
+            <CreateEventForm
+              onCancel={() => {
+                setActiveAction("none");
+                setEditingEvent(null);
+              }}
+              onCreated={fetchEvents}
+              initialEvent={editingEvent}
+            />
+          </div>
         )}
+
+        <EventDetailsModal
+          open={detailsOpen}
+          onClose={() => {
+            setDetailsOpen(false);
+            setSelectedEventId(null);
+            setEventDetails(null);
+            setDetailsError(null);
+          }}
+          loading={detailsLoading}
+          error={detailsError}
+          event={eventDetails}
+        />
+
+        <DeleteEventModal
+          open={Boolean(deleteTarget)}
+          title={deleteTarget?.title}
+          loading={deleteLoading}
+          onCancel={() => setDeleteTarget(null)}
+          onConfirm={async () => {
+            if (!deleteTarget) return;
+            try {
+              setDeleteLoading(true);
+              const res = await fetch(`/api/events/${deleteTarget.id}`, {
+                method: "DELETE",
+              });
+              const data = await res.json();
+              if (!res.ok) {
+                throw new Error(data?.message || "Failed to delete event");
+              }
+              setDeleteTarget(null);
+              fetchEvents();
+            } catch (err: any) {
+              console.error(err);
+            } finally {
+              setDeleteLoading(false);
+            }
+          }}
+        />
 
         <section className="space-y-4">
           <div className="flex items-center justify-between">
-            <h3 className="text-lg font-semibold text-white">
-              Workshops & Events
-            </h3>
             {loadingEvents && (
-              <span className="text-xs text-white/50">Loading...</span>
+              <span className="text-sm text-white/50">Loading the list of events...</span>
             )}
           </div>
 
@@ -215,7 +326,7 @@ export default function WorkshopsAndEventsTab() {
           )}
 
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
-            {events.map((event) => {
+            {pagedEvents.map((event) => {
               const dateValue = event.eventDate ? new Date(event.eventDate) : null;
               const status = dateValue && !Number.isNaN(dateValue.getTime())
                 ? dateValue.getTime() >= Date.now()
@@ -236,10 +347,45 @@ export default function WorkshopsAndEventsTab() {
                   status={status}
                   photo={event.photo}
                   additionalInfo={event.additionalInfo}
+                  onViewDetails={() => {
+                    setSelectedEventId(event.id);
+                    setDetailsOpen(true);
+                  }}
+                  onEdit={() => {
+                    setEditingEvent(event);
+                    setActiveAction("workshop");
+                  }}
+                  onDelete={() => setDeleteTarget(event)}
                 />
               );
             })}
           </div>
+
+          {events.length > pageSize && (
+            <div className="flex items-center justify-between pt-3">
+              <span className="text-xs text-white/50">
+                Page {clampedPage} of {totalPages}
+              </span>
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                  disabled={clampedPage === 1}
+                  className="rounded-full px-4 py-2 text-xs font-semibold border border-white/10 bg-white/5 text-white/70 hover:bg-white/10 transition cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  Previous
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+                  disabled={clampedPage === totalPages}
+                  className="rounded-full px-4 py-2 text-xs font-semibold border border-white/10 bg-white/5 text-white/70 hover:bg-white/10 transition cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  Next
+                </button>
+              </div>
+            </div>
+          )}
         </section>
       </div>
     </div>

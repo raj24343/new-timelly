@@ -41,7 +41,7 @@ export default function AppHeader({ title, profile, hideSearchAndNotifications =
           {/* LEFT */}
           <div>
             <SectionHeader title={title} />
-            <p className="text-xs text-white/60 hidden md:block">
+            <p className="text-xs pl-1.5 text-white/60 hidden md:block">
               Welcome back, {displayName.split(" ")[0]}
             </p>
           </div>

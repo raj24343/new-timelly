@@ -199,7 +199,7 @@ export const SCHOOLADMIN_TAB_TITLES: Record<string, string> = {
     "teacher-leaves": "Teacher Leaves",
     "tc-approvals": "TC Approvals",
     payments: "Payments",
-    workshops: "Workshops",
+    workshops: "Workshops & Events",
     newsfeed: "Newsfeed",
     exams: "Exams",
     analysis: "Analysis",
