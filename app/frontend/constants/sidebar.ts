@@ -77,7 +77,7 @@ export const SCHOOLADMIN_MENU_ITEMS: SidebarItem[] = [
     {
         label: "Dashboard",
         tab: "dashboard",
-        href: "/frontend/pages/schooladmin",
+        href: "/frontend/pages/schooladmin?tab=dashboard",
         icon: Home,
         permission: Permission.DASHBOARD,
     },

@@ -13,7 +13,7 @@ import WorkshopsAndEventsTab from "../../components/schooladmin/workshopsandeven
 import TeacherAuditTab from "../../components/schooladmin/TeacherAudit";
 import AddUser from "../../components/schooladmin/AddUser";
 import SchoolAdminFeesTab from "../../components/schooladmin/Fees";
-import SchoolAdminDashboard from "../../components/schooladmin/Dashboard";
+import SchoolAdminDashboard from "../../components/schooladmin/dashboard/page";
 import StudentDetails from "../../components/schooladmin/StudentDetails";
 import Certificates from "../../components/schooladmin/Certificates";
 import { ExamsPageInner } from "../../components/schooladmin/Exams";
