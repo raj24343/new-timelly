@@ -10,10 +10,11 @@ generator client {
   output          = "../app/generated/prisma"
 }
 
+
 datasource db {
   provider = "postgresql"
 }
-
+        
 enum Role {
   SUPERADMIN
   SCHOOLADMIN
@@ -205,6 +206,7 @@ model School {
   name                 String
   address              String
   location             String
+  logoUrl              String?               // Image URL (Supabase bucket)
   isActive             Boolean               @default(true)
   //library
   libraryIssues        LibraryIssue[]

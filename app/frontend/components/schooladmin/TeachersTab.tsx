@@ -312,7 +312,7 @@ const SchoolAdminTeacherTab = () => {
       }
 
       const pdfBytes = await pdfDoc.save();
-      const blob = new Blob([pdfBytes], { type: "application/pdf" });
+      const blob = new Blob([new Uint8Array(pdfBytes)], { type: "application/pdf" });
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
@@ -402,8 +402,7 @@ const SchoolAdminTeacherTab = () => {
                 value={<>{presentCount} <span className="text-sm text-lime-400">/ {teachers.length}</span></>}
                 icon={<UserCheck size={70} className="text-white/30" />}
                 iconVariant="plain"
-                progress={overallPct}
-/>
+              />
               <StatCard
                 title="On Leave"
                 value={<>{onLeaveCount} <span className="text-yellow-400 text-sm">Teacher{onLeaveCount !== 1 ? "s" : ""}</span></>}
@@ -541,7 +540,6 @@ const SchoolAdminTeacherTab = () => {
     <div className="hidden md:block border-t border-white/10">
       <div className="overflow-x-auto">
         <DataTable
-          title=""
           columns={teacherColumns}
           data={filteredTeachers}
           loading={teachersLoading}

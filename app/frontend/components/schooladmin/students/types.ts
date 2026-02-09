@@ -22,6 +22,7 @@ export type StudentFormState = {
   status: string;
   fatherName: string;
   phoneNo: string;
+  email: string;
   aadhaarNo: string;
   totalFee: string;
   discountPercent: string;
