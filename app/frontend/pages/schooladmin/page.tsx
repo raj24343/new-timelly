@@ -9,6 +9,7 @@ import SchoolAdminStudentsTab from "../../components/schooladmin/Students";
 import SchoolAdminClassesTab from "../../components/schooladmin/Classes";
 import SchoolTeacherLeavesTab from "../../components/schooladmin/TeacherLeaves";
 import NewsFeed from "../../components/schooladmin/Newsfeed";
+import WorkshopsAndEventsTab from "../../components/schooladmin/workshopsandevents";
 import TeacherAuditTab from "../../components/schooladmin/TeacherAudit";
 import AddUser from "../../components/schooladmin/AddUser";
 import SchoolAdminFeesTab from "../../components/schooladmin/Fees";
@@ -73,7 +74,7 @@ function SchoolAdminContent() {
       case "teacher-audit":
         return <TeacherAuditTab />;
       case "workshops":
-        return ;
+        return <WorkshopsAndEventsTab/>;
       case "newsfeed":
         return <NewsFeed/>;
         case "circulars":
