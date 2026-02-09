@@ -7,6 +7,7 @@ import { ProfileSidebar } from "./components/ProfileSidebar";
 import { AttendanceTrends } from "./components/AttendanceTrends";
 import { Certificates } from "./components/Certificates";
 import { Calendar, BookOpen, Activity, Clock } from "lucide-react";
+import PageHeader from "../../common/PageHeader";
 
 type StudentDetail = {
   student: {
@@ -138,15 +139,16 @@ export default function StudentDetailsPage() {
 
   return (
     <div className="p-2 sm:p-6 md:p-8 space-y-6 md:space-y-8 max-w-[1600px] mx-auto">
-      <header className="flex justify-between items-start sm:items-center flex-wrap gap-4">
-        <div>
-          <h1 className="text-2xl font-bold text-white">Student Details</h1>
-          <p className="text-gray-400 text-sm mt-0.5">View comprehensive academic and personal records.</p>
-        </div>
-        <div className="bg-white/5 border border-white/10 px-4 py-2 rounded-xl text-sm text-gray-200">
-          {new Date().getFullYear() - 1}-{new Date().getFullYear()}
-        </div>
-      </header>
+      <PageHeader
+        title="Student Details"
+        subtitle="View comprehensive academic and personal records."
+        rightSlot={
+          <div className="bg-[#0F172A]/40 border border-white/10 px-4 py-2 rounded-xl text-sm text-gray-200">
+            {new Date().getFullYear() - 1}-{new Date().getFullYear()}
+          </div>
+        }
+      />
+
 
       <div className="bg-white/5 backdrop-blur-xl border-b border-white/10 rounded-2xl p-4 sm:p-6 grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6">
         <div>
@@ -158,7 +160,7 @@ export default function StudentDetailsPage() {
               placeholder="Search by name or ID..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full bg-white/5 border border-white/10 rounded-xl pl-10 pr-4 py-2.5 sm:py-2 text-sm outline-none text-gray-200 min-h-[44px] touch-manipulation"
+              className="w-full bg-[#0F172A]/40 border border-white/10 rounded-xl pl-10 pr-4 py-2.5 sm:py-2 text-sm outline-none text-gray-200 min-h-[44px] touch-manipulation"
             />
           </div>
         </div>
@@ -167,7 +169,7 @@ export default function StudentDetailsPage() {
           <select
             value={filterClass}
             onChange={(e) => setFilterClass(e.target.value)}
-            className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 sm:py-2 text-sm outline-none text-gray-200 min-h-[44px] touch-manipulation"
+            className="w-full bg-[#0F172A]/40 border border-white/10 rounded-xl px-4 py-2.5 sm:py-2 text-sm outline-none text-gray-200 min-h-[44px] touch-manipulation"
           >
             {classOptions.map((o) => (
               <option key={o.value} value={o.value}>{o.label}</option>
@@ -179,7 +181,7 @@ export default function StudentDetailsPage() {
           <select
             value={filterSection}
             onChange={(e) => setFilterSection(e.target.value)}
-            className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 sm:py-2 text-sm outline-none text-gray-200 min-h-[44px] touch-manipulation"
+            className="w-full bg-[#0F172A]/40 border border-white/10 rounded-xl px-4 py-2.5 sm:py-2 text-sm outline-none text-gray-200 min-h-[44px] touch-manipulation"
           >
             {sectionOptions.map((o) => (
               <option key={o.value} value={o.value}>{o.label}</option>
@@ -191,7 +193,7 @@ export default function StudentDetailsPage() {
           <select
             value={selectedId ?? ""}
             onChange={(e) => setSelectedId(e.target.value || null)}
-            className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 sm:py-2 text-sm outline-none text-gray-200 min-h-[44px] touch-manipulation"
+            className="w-full bg-lime-400/10 border border-lime-400/40 rounded-xl px-4 py-2.5 sm:py-2 text-sm outline-none text-gray-200 min-h-[44px] touch-manipulation"
           >
             {filtered.map((s) => (
               <option key={s.id} value={s.id}>
@@ -236,7 +238,7 @@ export default function StudentDetailsPage() {
                 </div>
                 <div className="min-w-0">
                   <p className="text-[10px] sm:text-xs text-gray-500">Attendance</p>
-                  <p className="text-base sm:text-lg font-bold text-lime-400 truncate">
+                  <p className="text-base sm:text-lg font-bold text-white truncate">
                     {detail.attendanceTrends.length
                       ? `${Math.round(detail.attendanceTrends.reduce((a, t) => a + t.pct, 0) / detail.attendanceTrends.length)}%`
                       : "-"}
@@ -245,12 +247,12 @@ export default function StudentDetailsPage() {
                 </div>
               </div>
               <div className="bg-white/5 backdrop-blur-xl border-b border-white/10 rounded-2xl p-3 sm:p-4 flex items-center gap-3 sm:gap-4 min-w-0">
-                <div className="p-2 bg-blue-400/10 rounded-xl flex-shrink-0">
+                <div className="p-2 text-white rounded-xl flex-shrink-0">
                   <BookOpen className="w-5 h-5 text-blue-400" />
                 </div>
                 <div>
                   <p className="text-xs text-gray-500">Avg Grade</p>
-                  <p className="text-lg font-bold text-blue-400">
+                  <p className="text-lg font-bold text-white">
                     {detail.academicPerformance.length ? "A" : "-"}
                   </p>
                   <p className="text-[10px] text-blue-400">Academic Rank: 5</p>
@@ -285,13 +287,12 @@ export default function StudentDetailsPage() {
             </div>
 
             <AcademicPerformance data={detail.academicPerformance} />
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <AttendanceTrends data={detail.attendanceTrends} />
+           
+             <AttendanceTrends data={detail.attendanceTrends} />
               <FeeTransactions
                 fee={detail.fee}
                 payments={detail.payments}
               />
-            </div>
             <Certificates certificates={detail.certificates} />
           </div>
         </div>
