@@ -36,7 +36,7 @@ const TEACHER_TAB_TITLES = {
   settings: "Settings",
 };
 
-export default function TeacherDashboardContent() {
+function TeacherDashboardInner() {
   const { data: session } = useSession();
   const tab = useSearchParams().get("tab") ?? "dashboard";
   const title = (TEACHER_TAB_TITLES as any)[tab] ?? tab.toUpperCase();
@@ -47,21 +47,21 @@ export default function TeacherDashboardContent() {
   });
 
   const renderTabContent = () => {
-    switch (tab) {      
+    switch (tab) {
       case "dashboard":
         return <TeacherDashboard/>;
       case "classes":
         return <TeacherClasses/>;
       case "marks":
-        return <TeacherMarksTab/>;  
+        return <TeacherMarksTab/>;
       case "homework":
         return <TeacherHomeworkTab/>;
       case "attendance":
-        return <TeacherAttendanceTab/>;  
-      case "exams":      
+        return <TeacherAttendanceTab/>;
+      case "exams":
         return <TeacherExamsTab/>;
-      case "workshops":       
-       return <TeacherWorkshopsTab/>;
+      case "workshops":
+        return <TeacherWorkshopsTab/>;
       case "newsfeed":
         return <TeacherNewsfeed/>;
       case "chat":
@@ -101,20 +101,26 @@ export default function TeacherDashboardContent() {
     };
   }, [session?.user?.name]);
 
-    return (
-      <RequiredRoles allowedRoles={["TEACHER"]}>
-        <RequireFeature requiredFeature={tab}>
-          <AppLayout
-            activeTab={tab}
-            title={title}
-            menuItems={TEACHER_MENU_ITEMS}
-            profile={profile}
-            children={
-              renderTabContent()
-            }
-          />
-        </RequireFeature>
-      </RequiredRoles>
-    );
+  return (
+    <RequiredRoles allowedRoles={["TEACHER"]}>
+      <RequireFeature requiredFeature={tab}>
+        <AppLayout
+          activeTab={tab}
+          title={title}
+          menuItems={TEACHER_MENU_ITEMS}
+          profile={profile}
+          children={renderTabContent()}
+        />
+      </RequireFeature>
+    </RequiredRoles>
+  );
+}
+
+export default function TeacherDashboardContent() {
+  return (
+    <Suspense fallback={<div className="min-h-screen flex items-center justify-center text-white/70">Loading…</div>}>
+      <TeacherDashboardInner />
+    </Suspense>
+  );
 }
 

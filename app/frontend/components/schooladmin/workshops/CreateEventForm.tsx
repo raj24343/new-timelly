@@ -1,10 +1,11 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { X, Image as ImageIcon, SquarePen, Save, Trash2 } from "lucide-react";
+import { X, Image as ImageIcon, SquarePen, Save, Trash2, Loader2 } from "lucide-react";
 import SearchInput from "../../common/SearchInput";
 import EventSelectField from "./EventSelectField";
 import SuccessPopup from "./SuccessPopup";
+import { uploadImage } from "../../../utils/upload";
 
 const eventTypeOptions = [
   { id: "workshop", name: "Workshop" },
@@ -60,6 +61,7 @@ export default function CreateEventForm({
   const [additionalInfo, setAdditionalInfo] = useState("");
   const [photoFile, setPhotoFile] = useState<File | null>(null);
   const [photoDataUrl, setPhotoDataUrl] = useState<string | null>(null);
+  const [photoUploading, setPhotoUploading] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [showSuccess, setShowSuccess] = useState(false);
@@ -138,7 +140,7 @@ export default function CreateEventForm({
           mode,
           additionalInfo,
           eventDate,
-          photo: photoDataUrl,
+          photo: photoDataUrl || null,
         }),
       });
 
@@ -328,20 +330,26 @@ export default function CreateEventForm({
               type="file"
               accept="image/*"
               className="hidden"
-              onChange={(e) => {
+              onChange={async (e) => {
                 const file = e.target.files?.[0] ?? null;
-                setPhotoFile(file);
                 if (!file) {
+                  setPhotoFile(null);
                   setPhotoDataUrl(null);
+                  e.target.value = "";
                   return;
                 }
-                const reader = new FileReader();
-                reader.onload = () => {
-                  if (typeof reader.result === "string") {
-                    setPhotoDataUrl(reader.result);
-                  }
-                };
-                reader.readAsDataURL(file);
+                setPhotoFile(file);
+                setPhotoUploading(true);
+                try {
+                  const url = await uploadImage(file, "events");
+                  setPhotoDataUrl(url);
+                } catch (err) {
+                  alert(err instanceof Error ? err.message : "Failed to upload image");
+                  setPhotoFile(null);
+                } finally {
+                  setPhotoUploading(false);
+                }
+                e.target.value = "";
               }}
             />
             <div className="grid grid-cols-2 gap-3 sm:gap-4">
@@ -368,12 +376,17 @@ export default function CreateEventForm({
 
               <button
                 type="button"
+                disabled={photoUploading}
                 onClick={() => fileInputRef.current?.click()}
-                className="h-32 sm:h-36 rounded-2xl border border-dashed border-white/30 bg-black/20 text-white/50 flex flex-col items-center justify-center gap-2 hover:border-lime-400/60 hover:text-white/70 transition cursor-pointer"
+                className="h-32 sm:h-36 rounded-2xl border border-dashed border-white/30 bg-black/20 text-white/50 flex flex-col items-center justify-center gap-2 hover:border-lime-400/60 hover:text-white/70 transition cursor-pointer disabled:opacity-60"
               >
-                <ImageIcon size={22} />
+                {photoUploading ? (
+                  <Loader2 size={22} className="animate-spin" />
+                ) : (
+                  <ImageIcon size={22} />
+                )}
                 <span className="text-sm">
-                  {photoFile ? "Photo Selected" : "Add Photo"}
+                  {photoUploading ? "Uploading…" : photoFile ? "Photo selected" : "Add photo (high quality)"}
                 </span>
               </button>
             </div>
