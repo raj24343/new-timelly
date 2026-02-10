@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, ComponentType } from "react";
+import { useEffect, useRef, useState, ComponentType } from "react";
 import { LucideProps, Eye, EyeOff } from "lucide-react";
 import clsx from "clsx";
 import { PRIMARY_COLOR, HOVER_COLOR } from "../../constants/colors";
@@ -12,6 +12,9 @@ interface SearchInputProps {
 
   icon?: ComponentType<LucideProps>;
   showSearchIcon?: boolean;
+  iconPosition?: "left" | "right";
+  iconClickable?: boolean;
+  iconAriaLabel?: string;
 
   disabled?: boolean;
   className?: string;
@@ -30,6 +33,9 @@ export default function SearchInput({
   placeholder = "Search...",
   icon,
   showSearchIcon = true,
+  iconPosition = "left",
+  iconClickable = false,
+  iconAriaLabel = "Input icon",
   disabled = false,
   className,
   inputClassName,
@@ -41,6 +47,7 @@ export default function SearchInput({
 }: SearchInputProps) {
   const [mounted, setMounted] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const inputRef = useRef<HTMLInputElement | null>(null);
 
   useEffect(() => {
     setMounted(true);
@@ -48,6 +55,16 @@ export default function SearchInput({
 
   const Icon = icon ?? null;
   const shouldShowIcon = mounted && Icon && showSearchIcon;
+  const iconOnRight = iconPosition === "right";
+  const shouldRenderIconButton = shouldShowIcon && iconClickable && !disabled;
+
+  const handleIconClick = () => {
+    if (!inputRef.current) return;
+    if (typeof inputRef.current.showPicker === "function") {
+      inputRef.current.showPicker();
+    }
+    inputRef.current.focus();
+  };
 
   const inputType =
     type === "password" ? (showPassword ? "text" : "password") : type;
@@ -64,19 +81,37 @@ export default function SearchInput({
 
       <div className="relative w-full">
 
-        {shouldShowIcon && (
+        {shouldShowIcon && !shouldRenderIconButton && (
           <Icon
             size={18}
             className={clsx(
-              "absolute left-4 top-1/2 -translate-y-1/2",
+              "absolute top-1/2 -translate-y-1/2",
+              iconOnRight ? "right-4" : "left-4",
               "z-10 pointer-events-none",
               isGlass ? "text-white/60" : iconClassName
             )}
           />
         )}
+        {shouldRenderIconButton && (
+          <button
+            type="button"
+            onClick={handleIconClick}
+            aria-label={iconAriaLabel}
+            className={clsx(
+              "absolute top-1/2 -translate-y-1/2",
+              iconOnRight ? "right-3" : "left-3",
+              "z-10 rounded-full p-1.5",
+              "text-white/70 hover:text-white",
+              "hover:bg-white/10"
+            )}
+          >
+            <Icon size={18} />
+          </button>
+        )}
 
         <input
           type={inputType}
+          ref={inputRef}
           value={value}
           disabled={disabled}
           placeholder={placeholder}
@@ -84,8 +119,9 @@ export default function SearchInput({
           aria-invalid={!!error}
           className={clsx(
             "w-full rounded-xl",
-            shouldShowIcon ? "pl-11" : "pl-4",
-            "pr-4 py-2.5 sm:py-3",
+            shouldShowIcon && !iconOnRight ? "pl-11" : "pl-4",
+            shouldShowIcon && iconOnRight ? "pr-11" : "pr-4",
+            "py-2.5 sm:py-3",
             "bg-black/20 border border-white/10",
             "text-gray-200 text-sm sm:text-base",
             "placeholder-white/40",
