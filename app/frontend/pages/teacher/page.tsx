@@ -104,7 +104,7 @@ export default function TeacherDashboardInner() {
 
   return (
     <RequiredRoles allowedRoles={["TEACHER"]}>
-      <AppLayout
+      {/* <AppLayout
         activeTab={tab}
         title={title}
         menuItems={TEACHER_MENU_ITEMS}
@@ -114,7 +114,7 @@ export default function TeacherDashboardInner() {
             <HomeworkPage/>
           </div>
         }
-      />
+      /> */}
       <RequireFeature requiredFeature={tab}>
         <AppLayout
           activeTab={tab}
