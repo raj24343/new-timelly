@@ -43,12 +43,14 @@ interface CreateEventFormProps {
     additionalInfo?: string | null;
     photo?: string | null;
   } | null;
+  className?: string;
 }
 
 export default function CreateEventForm({
   onCancel,
   onCreated,
   initialEvent,
+  className,
 }: CreateEventFormProps) {
   const [title, setTitle] = useState("");
   const [date, setDate] = useState("");
@@ -182,7 +184,7 @@ export default function CreateEventForm({
   };
 
   return (
-    <section className="bg-[#0F172A] border border-lime-400/30 rounded-2xl p-4 sm:p-5 shadow-2xl relative overflow-hidden animate-fadeIn">
+    <section className={`border border-lime-400/30 rounded-2xl p-4 sm:p-5 shadow-2xl relative overflow-hidden animate-fadeIn ${className ?? "bg-[#0F172A]"} `}>
       <SuccessPopup
         open={showSuccess}
         title={successTitle}
