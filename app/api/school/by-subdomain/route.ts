@@ -11,8 +11,9 @@ export async function GET(req: Request) {
   try {
     const { searchParams } = new URL(req.url);
     const querySubdomain = searchParams.get("subdomain");
+    const headersList = await headers();
     const subdomain =
-      querySubdomain ?? headers().get("x-school-subdomain") ?? null;
+      querySubdomain ?? headersList.get("x-school-subdomain") ?? null;
 
     if (!subdomain) {
       return NextResponse.json(
