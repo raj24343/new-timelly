@@ -66,67 +66,8 @@ export function TeacherDashboardContent({
   onOpenChat,
 }: DashboardContentProps) {
   const stats = data.stats;
-  const notifications = data.notifications.length
-    ? data.notifications
-    : [
-      {
-        id: "ntf-1",
-        title: "Parent Message from Aarav's Father",
-        message: "Regarding homework submission for this week.",
-        type: "ALERT",
-        createdAt: new Date(Date.now() - 10 * 60 * 1000).toISOString(),
-      },
-      {
-        id: "ntf-2",
-        title: "Staff Meeting Tomorrow",
-        message: "All teachers are requested to attend at 3:00 PM.",
-        type: "INFO",
-        createdAt: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
-      },
-      {
-        id: "ntf-3",
-        title: "Marks Entry Deadline",
-        message: "Please submit Term 1 marks by Jan 30th.",
-        type: "WARN",
-        createdAt: new Date(Date.now() - 5 * 60 * 60 * 1000).toISOString(),
-      },
-      {
-        id: "ntf-4",
-        title: "Workshop Registration Open",
-        message: "New teaching methodologies workshop is live.",
-        type: "UPDATE",
-        createdAt: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(),
-      },
-    ];
-  const recentChats = data.recentChats.length
-    ? data.recentChats
-    : [
-      {
-        id: "chat-1",
-        parentName: "Mr. Rajesh Kumar",
-        studentName: "Aarav Kumar",
-        status: "OPEN",
-        note: "Thank you for the feedback on the assignment.",
-        createdAt: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
-      },
-      {
-        id: "chat-2",
-        parentName: "Mrs. Meena Patel",
-        studentName: "Diya Patel",
-        status: "OPEN",
-        note: "When is the next test scheduled?",
-        createdAt: new Date(Date.now() - 5 * 60 * 60 * 1000).toISOString(),
-      },
-      {
-        id: "chat-3",
-        parentName: "Mr. Amit Shah",
-        studentName: "Rohan Shah",
-        status: "OPEN",
-        note: "Could you share additional resources?",
-        createdAt: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(),
-      },
-    ];
-
+  const notifications = data.notifications ?? [];
+  const recentChats = data.recentChats ?? [];
   return (
     <>
       <section className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
@@ -282,7 +223,7 @@ export function TeacherDashboardContent({
 
       <section className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
         <div className="lg:col-span-2 space-y-4">
-          <div className="min-h-[520px] background-blur-2xl border border-white/10 bg-transparent rounded-2xl overflow-hidden border border-white/5 flex flex-col justify-center 
+          <div className="min-h-[500px] background-blur-2xl border border-white/10 bg-transparent rounded-2xl overflow-hidden border border-white/5 flex flex-col justify-center 
           items-center p-8 sm:p-10 text-center group hover:border-lime-400/30 transition-all">
             <div className="p-6 rounded-full bg-white/5 group-hover:bg-lime-400/10 transition-colors mb-4">
               <Users size={22} className="lucide lucide-users w-10 h-10 text-gray-400 group-hover:text-lime-400 transition-colors" />
@@ -344,34 +285,49 @@ export function TeacherDashboardContent({
         </div>
 
         <div className="space-y-4 lg:sticky lg:top-6">
-          <div className="rounded-2xl border border-white/10 background-blur-2xl bg-white/5 p-6">
+          <div className="rounded-2xl border border-white/10 background-blur-2xl bg-white/5 p-6 min-h-[500px]">
             <h3 className="text-xl font-semibold text-white">Notifications</h3>
             <p className="text-sm text-white/60 mt-1">Recent alerts and updates</p>
 
             <div className="mt-4 space-y-3 divide-y divide-white/5 overflow-y-auto max-h-[400px] no-scrollbar scrollbar-thumb-white/10">
-              {notifications.map((n) => (
-                <div key={n.id} className="flex gap-3 rounded-xl p-3
-                p-5 hover:bg-white/5 transition-all cursor-pointer group">
-                  <div className="p-2 rounded-lg mt-0.5 bg-red-500/10 text-red-400 border border-red-500/20 h-8">
-                    <CircleAlert size={18} className="lucide lucide-circle-alert w-4 h-4" />
+              <div className="mt-4 space-y-3 divide-y divide-white/5 
+                  overflow-y-auto max-h-[400px] no-scrollbar">
+
+                {notifications.length === 0 ? (
+                  <div className="text-sm text-white/50 py-6 text-center">
+                    No notifications available.
                   </div>
-                  <div className="flex-1">
-                    <div className="flex items-center justify-between mb-1">
-                      <h4 className="font-semibold text-gray-200 text-sm truncate
-                       group-hover:text-white transition-colors">{n.title}</h4>
+                ) : (
+                  notifications.map((n) => (
+                    <div
+                      key={n.id}
+                      className="flex gap-3 p-4 hover:bg-white/5 
+                      transition-all cursor-pointer group"
+                    >
+                      <div className="p-2 rounded-lg bg-red-500/10 text-red-400 
+                         border border-red-500/20 h-8">
+                        <CircleAlert size={16} />
+                      </div>
+
+                      <div className="flex-1">
+                        <h4 className="font-semibold text-gray-200 text-sm 
+                          group-hover:text-white transition-colors truncate">
+                          {n.title}
+                        </h4>
+
+                        <p className="text-xs text-gray-400 mt-1 line-clamp-2">
+                          {n.message}
+                        </p>
+
+                        <p className="text-[10px] text-gray-600 mt-2 uppercase tracking-wider">
+                          {formatRelativeTime(n.createdAt)}
+                        </p>
+                      </div>
                     </div>
-                    <p className="text-xs text-gray-400 mt-1 line-clamp-2">
-                      {n.message}
-                    </p>
-                    <p className="text-[10px] text-gray-600 mt-2 uppercase tracking-wider font-medium">
-                      {formatRelativeTime(n.createdAt)}
-                    </p>
-                  </div>
-                </div>
-              ))}
-              {notifications.length === 0 && (
-                <div className="text-sm text-white/60">No notifications yet.</div>
-              )}
+                  ))
+                )}
+              </div>
+
             </div>
           </div>
 
@@ -392,30 +348,47 @@ export function TeacherDashboardContent({
             </div>
 
             <div className="mt-4 space-y-3 divide-y divide-white/5 overflow-y-auto no-scrollbar scrollbar-thumb-white/10">
-              {recentChats.map((chat) => (
-                <div key={chat.id} className="flex items-start gap-4 p-5 hover:bg-white/5 transition-all cursor-pointer group ">
-                  <div className="p-2.5 bg-white/5 rounded-xl text-gray-400 group-hover:bg-lime-400/10
-                   group-hover:text-lime-400 transition-all border border-white/5">
-                    <MessageSquare size={18} className="lucide lucide-message-square w-5 h-5" />
+              <div className="mt-4 space-y-3 divide-y divide-white/5 overflow-y-auto">
+                {recentChats.length === 0 ? (
+                  <div className="text-sm text-white/50 py-6 text-center">
+                    No recent chats.
                   </div>
-                  <div className="flex-1">
-                    <h4 className="font-semibold text-gray-200 text-sm group-hover:text-white transition-colors">{chat.parentName}</h4>
-                    <p className="text-xs text-lime-400/80 mb-1">Parent of {chat.studentName}</p>
-                    <p className="text-xs text-gray-400 line-clamp-1 group-hover:text-gray-300">
-                      {chat.note || "No message preview available."}
-                    </p>
-                    <p className="text-[10px] text-gray-600 mt-2 uppercase tracking-wider font-medium">
-                      {formatRelativeTime(chat.createdAt)}
-                    </p>
-                  </div>
-                  <div className="flex items-start">
-                    <CheckCircle2 size={14} className="text-lime-300" />
-                  </div>
-                </div>
-              ))}
-              {recentChats.length === 0 && (
-                <div className="text-sm text-white/60">No recent chats.</div>
-              )}
+                ) : (
+                  recentChats.map((chat) => (
+                    <div
+                      key={chat.id}
+                      className="flex items-start gap-4 p-4 
+                      hover:bg-white/5 transition-all cursor-pointer group"
+                    >
+                      <div className="p-2.5 bg-white/5 rounded-xl text-gray-400 
+                        group-hover:bg-lime-400/10 group-hover:text-lime-400 
+                        transition-all border border-white/5">
+                        <MessageSquare size={18} />
+                      </div>
+
+                      <div className="flex-1 min-w-0">
+                        <h4 className="font-semibold text-gray-200 text-sm truncate 
+                        group-hover:text-white">
+                          {chat.parentName}
+                        </h4>
+
+                        <p className="text-xs text-lime-400/80 mb-1 truncate">
+                          Parent of {chat.studentName}
+                        </p>
+
+                        <p className="text-xs text-gray-400 truncate">
+                          {chat.note || "No message preview available."}
+                        </p>
+
+                        <p className="text-[10px] text-gray-600 mt-2 uppercase tracking-wider">
+                          {formatRelativeTime(chat.createdAt)}
+                        </p>
+                      </div>
+                    </div>
+                  ))
+                )}
+              </div>
+
             </div>
 
             {/* <button

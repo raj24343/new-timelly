@@ -37,7 +37,7 @@ const TEACHER_TAB_TITLES = {
   settings: "Settings",
 };
 
-function TeacherDashboardInner() {
+export default function TeacherDashboardInner() {
   const { data: session } = useSession();
   const tab = useSearchParams().get("tab") ?? "dashboard";
   const title = (TEACHER_TAB_TITLES as any)[tab] ?? tab.toUpperCase();
@@ -50,29 +50,29 @@ function TeacherDashboardInner() {
   const renderTabContent = () => {
     switch (tab) {
       case "dashboard":
-        return <TeacherDashboard/>;
+        return <TeacherDashboard />;
       case "classes":
-        return <TeacherClasses/>;
+        return <TeacherClasses />;
       case "marks":
-        return <TeacherMarksTab/>;
+        return <TeacherMarksTab />;
       case "homework":
-        return <TeacherHomeworkTab/>;
+        return <TeacherHomeworkTab />;
       case "attendance":
-        return <TeacherAttendanceTab/>;
+        return <TeacherAttendanceTab />;
       case "exams":
-        return <TeacherExamsTab/>;
+        return <TeacherExamsTab />;
       case "workshops":
-        return <TeacherWorkshopsTab/>;
+        return <TeacherWorkshopsTab />;
       case "newsfeed":
-        return <TeacherNewsfeed/>;
+        return <TeacherNewsfeed />;
       case "chat":
-        return <TeacherParentChatTab/>;
+        return <TeacherParentChatTab />;
       case "leaves":
-        return <TeacherLeavesTab/>;
+        return <TeacherLeavesTab />;
       case "profile":
-        return <TeacherProfileTab/>;
+        return <TeacherProfileTab />;
       case "settings":
-        return <TeacherSettingsTab/>;
+        return <TeacherSettingsTab />;
       default:
         return <div>Unknown Tab</div>;
     }
@@ -104,7 +104,7 @@ function TeacherDashboardInner() {
 
   return (
     <RequiredRoles allowedRoles={["TEACHER"]}>
-      <AppLayout
+      {/* <AppLayout
         activeTab={tab}
         title={title}
         menuItems={TEACHER_MENU_ITEMS}
@@ -114,7 +114,7 @@ function TeacherDashboardInner() {
             <HomeworkPage/>
           </div>
         }
-      />
+      /> */}
       <RequireFeature requiredFeature={tab}>
         <AppLayout
           activeTab={tab}
@@ -128,11 +128,10 @@ function TeacherDashboardInner() {
   );
 }
 
-export default function TeacherDashboardContent() {
-  return (
-    <Suspense fallback={<div className="min-h-screen flex items-center justify-center text-white/70">Loading…</div>}>
-      <TeacherDashboardInner />
-    </Suspense>
-  );
-}
-
+// export default function TeacherDashboardContent() {
+//   return (
+//     <Suspense fallback={<div className="min-h-screen flex items-center justify-center text-white/70">Loading…</div>}>
+//       <TeacherDashboardInner />
+//     </Suspense>
+//   );
+// }
