@@ -14,11 +14,12 @@ import TeacherHomeworkTab from "../../components/teacher/homework/Homework";
 import TeacherAttendanceTab from "../../components/teacher/attendance/Attendance";
 import TeacherExamsTab from "../../components/teacher/exams/Exams";
 import TeacherWorkshopsTab from "../../components/teacher/workshops/WorkShops";
-import TeacherNewsfeed from "../../components/teacher/newsfeed/Newsfeed";
 import TeacherParentChatTab from "../../components/teacher/parentchat/ParentChat";
 import TeacherLeavesTab from "../../components/teacher/leave/Leave";
 import TeacherProfileTab from "../../components/teacher/profile/Profile";
 import TeacherSettingsTab from "../../components/teacher/settings/Settings";
+import NewsFeed from "../../components/schooladmin/Newsfeed";
+
 
 const TEACHER_TAB_TITLES = {
   dashboard: "Dashboard",
@@ -62,7 +63,7 @@ function TeacherDashboardInner() {
       case "workshops":
         return <TeacherWorkshopsTab />;
       case "newsfeed":
-        return <TeacherNewsfeed />;
+        return <NewsFeed />;
       case "chat":
         return <TeacherParentChatTab />;
       case "leaves":

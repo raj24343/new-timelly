@@ -6,6 +6,7 @@ import AppSidebar from "./components/common/Sidebar";
 import AppHeader from "./components/common/AppHeader";
 import MobileMoreOptions from "./components/mobilescreens/MobileMoreOptions";
 import BottomNavBar from "./components/mobilescreens/BottomNavbar";
+import { ToastProvider } from "./context/ToastContext";
 
 type Props = {
   title: string;
@@ -32,35 +33,40 @@ export default function AppLayout({
   const [showMore, setShowMore] = useState(false);
 
   return (
-    <div className="flex h-screen overflow-hidden">
+    <ToastProvider>
+      <div className="flex h-screen overflow-hidden">
+        {/* DESKTOP SIDEBAR - profile from layout (sidebar + header show same) */}
+        <aside className="hidden md:block">
+          <AppSidebar menuItems={menuItems} profile={profile} />
+        </aside>
 
-      {/* DESKTOP SIDEBAR - profile from layout (sidebar + header show same) */}
-      <aside className="hidden md:block">
-        <AppSidebar menuItems={menuItems} profile={profile} />
-      </aside>
+        {/* MAIN */}
+        <div className="flex-1 flex flex-col pb-16 md:pb-0">
+          <AppHeader
+            title={title}
+            profile={profile}
+            hideSearchAndNotifications={hideSearchAndNotifications}
+          />
 
-      {/* MAIN */}
-      <div className="flex-1 flex flex-col pb-16 md:pb-0">
-        <AppHeader title={title} profile={profile} hideSearchAndNotifications={hideSearchAndNotifications} />
+          <main className="flex-1 overflow-y-auto overflow-x-hidden no-scrollbar p-3 sm:p-4 md:p-6 min-h-0">
+            {children}
+          </main>
+        </div>
 
-        <main className="flex-1 overflow-y-auto overflow-x-hidden no-scrollbar p-3 sm:p-4 md:p-6 min-h-0">
-          {children}
-        </main>
-      </div>
-
-      {/* MOBILE BOTTOM NAV */}
-      <BottomNavBar
-        menuItems={menuItems}
-        onMoreClick={() => setShowMore(true)}
-      />
-
-      {/* MORE OPTIONS SHEET */}
-      {showMore && (
-        <MobileMoreOptions
-          items={menuItems}
-          onClose={() => setShowMore(false)}
+        {/* MOBILE BOTTOM NAV */}
+        <BottomNavBar
+          menuItems={menuItems}
+          onMoreClick={() => setShowMore(true)}
         />
-      )}
-    </div>
+
+        {/* MORE OPTIONS SHEET */}
+        {showMore && (
+          <MobileMoreOptions
+            items={menuItems}
+            onClose={() => setShowMore(false)}
+          />
+        )}
+      </div>
+    </ToastProvider>
   );
 }
