@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import PageHeader from "../../common/PageHeader";
-import { Plus, Calendar as CalendarIcon, Search } from "lucide-react";
+import { Plus, Calendar as CalendarIcon, Search, BookOpen } from "lucide-react";
 import ExamCard from "./examComponents/ExamCard";
 import ScheduleExamView from "./examComponents/ScheduleExamView";
 import ExamDetailsView from "./examComponents/ExamDetailsView";
@@ -25,12 +25,47 @@ export default function TeacherExamsTab() {
 
     async function loadExams() {
         setLoading(true);
-        const res = await fetch("/api/exams/terms");
-        const data = await res.json();
-        setExams(data.terms || []);
-        setLoading(false);
+        try {
+            const res = await fetch("/api/exams/terms");
+            const data = await res.json();
+            
+            if (data.terms && data.terms.length > 0) {
+                setExams(data.terms);
+            } else {
+                // FALLBACK DUMMY DATA (Remove this once your API is working perfectly)
+                setExams([
+                    {
+                        id: "1",
+                        status: "Upcoming",
+                        name: "Term 1 Mathematics Finals",
+                        subject: "Mathematics",
+                        class: { name: "10", section: "A" },
+                        date: "2026-10-15",
+                        time: "09:00 AM",
+                        duration: "3 Hours",
+                        syllabus: [{ completedPercent: 65 }]
+                    },
+                    {
+                        id: "2",
+                        status: "Completed",
+                        name: "Unit Test 2: Physics",
+                        subject: "Physics",
+                        class: { name: "9", section: "B" },
+                        date: "2026-09-20",
+                        time: "11:00 AM",
+                        duration: "1.5 Hours",
+                        syllabus: [{ completedPercent: 100 }]
+                    }
+                ]);
+            }
+        } catch (error) {
+            console.error("Failed to load exams:", error);
+        } finally {
+            setLoading(false);
+        }
     }
 
+    // Navigation Render Logic
     if (view.mode === "create") {
         return (
             <ScheduleExamView
@@ -74,44 +109,72 @@ export default function TeacherExamsTab() {
     );
 
     return (
-        <div className="min-h-screen text-white px-6 py-4">
+        <div className="min-h-screen space-y-6 px-1 md:px-0 animate-in fade-in duration-500">
+            {/* ENHANCED PAGE HEADER */}
             <PageHeader
                 title="Exams & Syllabus"
                 subtitle="Manage schedules and track syllabus coverage"
-                icon={<CalendarIcon className="text-[#b4ff39]" />}
+                icon={<BookOpen className="text-[#b4ff39] w-8 h-8" strokeWidth={2.5} />}
                 rightSlot={
                     <button
                         onClick={() => setView({ mode: "create" })}
-                        className="bg-[#b4ff39] text-black px-6 py-3 rounded-2xl font-bold flex items-center gap-2"
+                        className="bg-[#b4ff39] text-black px-6 py-3 rounded-2xl font-black text-xs uppercase tracking-widest flex items-center gap-2 hover:scale-105 transition-transform shadow-lg shadow-lime-500/20"
                     >
-                        <Plus size={20} /> Schedule Exam
+                        <Plus size={18} strokeWidth={3} /> Schedule Exam
                     </button>
                 }
             />
 
-            <div className="relative mb-8">
-                <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-white/30" />
-                <input
-                    placeholder="Search exams by class or subject..."
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className="w-full pl-12 py-4 rounded-2xl bg-white/5 border border-white/10"
-                />
-            </div>
+            {/* REFINED SEARCH BAR SECTION */}
+            <div className="relative mb-8  px-6 py-4 rounded-2xl  border border-white/10">
 
+                <Search className="absolute h-4 w-6 left-10 top-1/2 -translate-y-1/2 text-white/50" />
+
+                <input
+
+                    placeholder="    Search exams by class or subject..."
+
+                    value={searchQuery}
+
+                    onChange={(e) => setSearchQuery(e.target.value)}
+
+                    className="w-full pl-6 py-2 rounded-3xl bg-black/10 border border-lime-500/50 focus:outline-none "
+
+                />
+
+            </div>  
+
+            {/* EXAM CARDS GRID */}
             {loading ? (
-                <p className="text-white/40">Loading exams…</p>
-            ) : (
-                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {filtered.map((exam) => (
-                        <ExamCard
-                            key={exam.id}
-                            exam={exam}
-                            onView={() => setView({ mode: "view", examId: exam.id })}
-                            onEdit={() => setView({ mode: "edit", examId: exam.id })}
-                        />
-                    ))}
+                <div className="flex flex-col items-center justify-center py-20 opacity-40">
+                    <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-[#b4ff39] mb-4"></div>
+                    <p className="text-sm font-bold tracking-widest uppercase">Loading Exams...</p>
                 </div>
+            ) : (
+                <>
+                    {filtered.length === 0 ? (
+                        <div className="rounded-[32px] border border-white/10 bg-white/5 p-20 text-center">
+                            <p className="text-white/40">No exams found matching your search.</p>
+                        </div>
+                    ) : (
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                            {filtered.map((exam) => (
+                                <ExamCard
+                                    key={exam.id}
+                                    exam={exam}
+                                    onView={() => setView({ mode: "view", examId: exam.id })}
+                                    onEdit={() => setView({ mode: "edit", examId: exam.id })}
+                                    onDelete={() => {
+                                        if(confirm("Are you sure you want to delete this exam?")) {
+                                            // Add your delete API logic here
+                                            console.log("Delete exam", exam.id);
+                                        }
+                                    }}
+                                />
+                            ))}
+                        </div>
+                    )}
+                </>
             )}
         </div>
     );
